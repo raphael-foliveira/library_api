@@ -20,7 +20,7 @@ def list_authors(limit: int = 100, author_name: str = ""):
 
 
 @router.get("/{author_id}")
-def retrieve_author(author_id: int) -> models.Author:
+def retrieve_author(author_id: int) -> schemas.Author:
     return AuthorRepository().find(author_id)
 
 

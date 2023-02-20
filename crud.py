@@ -48,7 +48,7 @@ class BookRepository:
 class AuthorRepository:
     def find(self, author_id: int):
         with Session() as db:
-            author = db.query(models.Author).where(
+            author: models.Author = db.query(models.Author).where(
                 models.Author.id == author_id).first()
             if author is None:
                 raise HTTPException(400, 'this author could not be found')
