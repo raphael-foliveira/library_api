@@ -5,6 +5,14 @@ import models
 import schemas
 
 
+def db_session(func):
+    def wrapper(*args, **kwargs):
+        with Session() as db:
+            kwargs['db'] = db
+            return func(*args, **kwargs)
+    return wrapper
+
+
 class BookRepository:
     def find(self, book_id: int):
         with Session() as db:
@@ -46,9 +54,9 @@ class BookRepository:
 
 
 class AuthorRepository:
-    def find(self, author_id: int):
+    def find(self, author_id: int) -> models.Author:
         with Session() as db:
-            author: models.Author = db.query(models.Author).where(
+            author = db.query(models.Author).where(
                 models.Author.id == author_id).first()
             if author is None:
                 raise HTTPException(400, 'this author could not be found')
@@ -59,11 +67,12 @@ class AuthorRepository:
         with Session() as db:
             return db.query(models.Author).where(models.Author.first_name.ilike(author_name) or models.Author.last_name.ilike(author_name)).all()
 
-    def list(self, limit: int):
-        with Session() as db:
-            authors = db.query(models.Author).limit(limit).all()
-            [author.books for author in authors]
-            return authors
+    @db_session
+    def list(self, limit: int, db=Session()):
+        # with Session() as db:
+        authors = db.query(models.Author).limit(limit).all()
+        [author.books for author in authors]
+        return authors
 
     def create(self, author: schemas.AuthorCreate):
         with Session() as db:

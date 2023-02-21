@@ -1,6 +1,6 @@
 from datetime import date
 import os
-from fastapi import APIRouter, Form, UploadFile
+from fastapi import APIRouter, Form, Header, UploadFile
 
 from crud import AuthorRepository, BookRepository
 
@@ -13,8 +13,10 @@ router = APIRouter(
 
 
 @router.get("/")
-def list_books(limit: int = 100):
-    return BookRepository().list(limit=limit)
+def list_books(limit: int = 100, authorization: str = Header()) -> list[schemas.Book]:
+    books = BookRepository().list(limit=limit)
+    print(books)
+    return books  # type: ignore
 
 
 @router.get("/{book_id}")
