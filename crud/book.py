@@ -7,21 +7,21 @@ import schemas
 
 class BookRepository:
     @db_session
-    def find(self, book_id: int, db):
+    def find(self, book_id: int, db=Session()):
         return db.query(models.Book).filter(models.Book.id == book_id).first()
 
     @db_session
-    def list(self, db, limit: int = 100):
+    def list(self, db=Session(), limit: int = 100):
         books = db.query(models.Book).limit(limit).all()
         [book.author for book in books]
         return books
 
     @db_session
-    def retrieve_by_title(self, book_title: str, db):
+    def retrieve_by_title(self, book_title: str, db=Session()):
         return db.query(models.Book).filter(models.Book.title == book_title).all()
 
     @db_session
-    def create(self, book: schemas.BookCreate, db):
+    def create(self, book: schemas.BookCreate, db=Session()):
         new_book = models.Book(
             title=book.title,
             author_id=book.author_id,
@@ -35,7 +35,7 @@ class BookRepository:
         return new_book
 
     @db_session
-    def delete(self, book_id, db):
+    def delete(self, book_id, db=Session()):
         book = db.query(models.Book).filter(
             models.Book.id == book_id).first()
         if book is None:
