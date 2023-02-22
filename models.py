@@ -21,6 +21,6 @@ class Book(Base):
     release_date = Column(Date)
     number_of_pages = Column(Integer)
     author_id = Column(Integer, ForeignKey("authors.id"))
-    image_url = Column(String)
+    image_url = Column(String, nullable=True)
 
     author = relationship("Author", back_populates="books")

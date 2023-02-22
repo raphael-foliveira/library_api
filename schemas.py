@@ -7,7 +7,7 @@ class BookBase(BaseModel):
     release_date: date
     number_of_pages: int
     author_id: int
-    image_url: str
+    image_url: str | None
 
     class Config:
         orm_mode = True
