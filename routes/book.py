@@ -13,25 +13,25 @@ router = APIRouter(
 
 
 @router.get("/")
-def list_books(limit: int = 100, authorization: str = Header()) -> list[schemas.Book]:
+async def list_books(limit: int = 100) -> list[schemas.Book]:
     books = BookRepository().list(limit=limit)
     print(books)
     return books  # type: ignore
 
 
 @router.get("/{book_id}")
-def retrieve_book(book_id: int):
+async def retrieve_book(book_id: int) -> schemas.Book:
     return BookRepository().find(book_id)
 
 
 @router.post("/")
-def create_book(
+async def create_book(
     image: UploadFile,
     title: str = Form(),
     release_date: str = Form(),
     number_of_pages: str = Form(),
     author_id: str = Form(),
-):
+) -> schemas.Book:
     author = AuthorRepository().find(int(author_id))
     upload_path = f"./uploads/{author.id}"
     os.makedirs(upload_path, exist_ok=True)
@@ -51,5 +51,5 @@ def create_book(
 
 
 @ router.delete("/{book_id}")
-def delete_book(book_id: int):
+async def delete_book(book_id: int) -> schemas.Book:
     return BookRepository().delete(book_id)

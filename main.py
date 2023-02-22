@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from routes import author, book
-from database import Base, engine
-from sqlalchemy import MetaData
-from models import Author, Book
 
 
 app = FastAPI(
@@ -12,6 +9,7 @@ app = FastAPI(
 )
 
 # Base.metadata.create_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,

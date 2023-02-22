@@ -67,12 +67,12 @@ class AuthorRepository:
         with Session() as db:
             return db.query(models.Author).where(models.Author.first_name.ilike(author_name) or models.Author.last_name.ilike(author_name)).all()
 
-    @db_session
+    # @db_session
     def list(self, limit: int, db=Session()):
-        # with Session() as db:
-        authors = db.query(models.Author).limit(limit).all()
-        [author.books for author in authors]
-        return authors
+        with Session() as db:
+            authors = db.query(models.Author).limit(limit).all()
+            [author.books for author in authors]
+            return authors
 
     def create(self, author: schemas.AuthorCreate):
         with Session() as db:
@@ -83,6 +83,7 @@ class AuthorRepository:
             db.add(new_author)
             db.commit()
             db.refresh(new_author)
+            new_author.books
             return new_author
 
     def delete(self, author_id):
