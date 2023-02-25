@@ -1,27 +1,21 @@
-from crud.decorators import db_session
-from database import Session
+from database import DatabaseManager
 
 import models
 import schemas
 
 
 class BookRepository:
-    @db_session
-    def find(self, book_id: int, db=Session()):
-        return db.query(models.Book).filter(models.Book.id == book_id).first()
 
-    @db_session
-    def list(self, db=Session(), limit: int = 100):
-        books = db.query(models.Book).limit(limit).all()
-        [book.author for book in books]
-        return books
+    def __init__(self):
+        self.manager = DatabaseManager(models.Book)
 
-    @db_session
-    def retrieve_by_title(self, book_title: str, db=Session()):
-        return db.query(models.Book).filter(models.Book.title == book_title).all()
+    def find(self, book_id: int) -> models.Book:
+        return self.manager.find(book_id)
 
-    @db_session
-    def create(self, book: schemas.BookCreate, db=Session()):
+    def list(self) -> list[models.Book]:
+        return self.manager.list()
+
+    def create(self, book: schemas.BookCreate) -> models.Book:
         new_book = models.Book(
             title=book.title,
             author_id=book.author_id,
@@ -29,17 +23,10 @@ class BookRepository:
             number_of_pages=book.number_of_pages,
             image_url=book.image_url or None
         )
-        db.add(new_book)
-        db.commit()
-        db.refresh(new_book)
+        self.manager.create(new_book)
         return new_book
 
-    @db_session
-    def delete(self, book_id, db=Session()):
-        book = db.query(models.Book).filter(
-            models.Book.id == book_id).first()
-        if book is None:
-            return
-        db.delete(book)
-        db.commit()
+    def delete(self, book_id) -> models.Book:
+        book = self.manager.find(book_id)
+        self.manager.delete(book)
         return book

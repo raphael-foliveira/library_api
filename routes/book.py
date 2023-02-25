@@ -1,6 +1,6 @@
 from datetime import date
 import os
-from fastapi import APIRouter, Form, Header, UploadFile
+from fastapi import APIRouter, Form, UploadFile
 
 from crud import AuthorRepository, BookRepository
 
@@ -14,9 +14,8 @@ router = APIRouter(
 
 @router.get("/")
 async def list_books(limit: int = 100) -> list[schemas.Book]:
-    books = BookRepository().list(limit=limit)
-    print(books)
-    return books  # type: ignore
+    books = BookRepository().list()
+    return books  # type:ignore
 
 
 @router.get("/{book_id}")
@@ -43,7 +42,10 @@ async def create_book(
     new_book = schemas.BookCreate(
         title=title,
         release_date=date(
-            release_date_split[0], release_date_split[1], release_date_split[2]),
+            release_date_split[0],
+            release_date_split[1],
+            release_date_split[2]
+        ),
         number_of_pages=int(number_of_pages),
         author_id=int(author_id),
         image_url=f"/static/{author_id}/{title}.jpg")

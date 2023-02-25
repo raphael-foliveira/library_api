@@ -10,7 +10,7 @@ class Author(Base):
     first_name = Column(String)
     last_name = Column(String)
 
-    books = relationship("Book", back_populates="author")
+    books = relationship("Book", back_populates="author", lazy="joined")
 
 
 class Book(Base):
@@ -23,4 +23,4 @@ class Book(Base):
     author_id = Column(Integer, ForeignKey("authors.id"))
     image_url = Column(String, nullable=True)
 
-    author = relationship("Author", back_populates="books")
+    author = relationship("Author", back_populates="books", lazy="joined")
