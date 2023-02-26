@@ -9,13 +9,13 @@ class BookRepository:
     def __init__(self):
         self.manager = DatabaseManager(models.Book)
 
-    def find(self, book_id: int) -> models.Book:
+    def find(self, book_id: int) -> schemas.Book:
         return self.manager.find(book_id)
 
-    def list(self) -> list[models.Book]:
+    def list(self) -> list[schemas.Book]:
         return self.manager.list()
 
-    def create(self, book: schemas.BookCreate) -> models.Book:
+    def create(self, book: schemas.BookCreate) -> schemas.Book:
         new_book = models.Book(
             title=book.title,
             author_id=book.author_id,
@@ -23,10 +23,12 @@ class BookRepository:
             number_of_pages=book.number_of_pages,
             image_url=book.image_url or None
         )
-        self.manager.create(new_book)
-        return new_book
+        if self.manager.create(new_book):
+            return new_book
+        raise
 
-    def delete(self, book_id) -> models.Book:
+    def delete(self, book_id) -> schemas.Book:
         book = self.manager.find(book_id)
-        self.manager.delete(book)
-        return book
+        if self.manager.delete(book):
+            return book
+        raise
