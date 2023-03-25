@@ -1,11 +1,8 @@
 import os
-from typing import Type, TypeVar
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
-import pydantic
-from sqlalchemy import create_engine, orm, select
-import sqlalchemy
+from sqlalchemy import create_engine, orm
 
 
 class DatabaseURLNotSetException(Exception):
@@ -24,7 +21,6 @@ Base = orm.declarative_base()
 
 
 class DatabaseManager:
-
     def __init__(self, entity_class):
         self.entity_class = entity_class
 
@@ -35,7 +31,7 @@ class DatabaseManager:
     def find(self, id: int):
         with Session() as db:
             object = db.query(self.entity_class).filter_by(id=id).first()
-            if (object is None):
+            if object is None:
                 raise Exception("object not found")
             return object
 

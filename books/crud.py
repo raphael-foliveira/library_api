@@ -1,13 +1,12 @@
 from database import DatabaseManager
 
-import models
-import schemas
+from .models import Book
+from . import schemas
 
 
 class BookRepository:
-
     def __init__(self):
-        self.manager = DatabaseManager(models.Book)
+        self.manager = DatabaseManager(Book)
 
     def find(self, book_id: int) -> schemas.Book:
         return self.manager.find(book_id)
@@ -16,12 +15,12 @@ class BookRepository:
         return self.manager.list()
 
     def create(self, book: schemas.BookCreate) -> schemas.Book:
-        new_book = models.Book(
+        new_book = Book(
             title=book.title,
             author_id=book.author_id,
             release_date=book.release_date,
             number_of_pages=book.number_of_pages,
-            image_url=book.image_url or None
+            image_url=book.image_url or None,
         )
         if self.manager.create(new_book):
             return new_book

@@ -1,10 +1,7 @@
-
-from typing import List
 from fastapi import APIRouter
-import models
 
-import schemas
-from crud import AuthorRepository
+from . import schemas
+from .crud import AuthorRepository
 
 router = APIRouter(
     prefix="/authors",
@@ -13,8 +10,8 @@ router = APIRouter(
 
 
 @router.get("/")
-async def list_authors(limit: int = 100) -> list[schemas.Author]:
-    return AuthorRepository().list(limit)  # type:ignore
+async def list_authors() -> list[schemas.Author]:
+    return AuthorRepository().list()
 
 
 @router.get("/{author_id}")

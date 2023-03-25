@@ -1,11 +1,11 @@
-from datetime import date
 import os
+from datetime import date
+
+from . import schemas
+from .crud import BookRepository
 from fastapi import APIRouter, Form, UploadFile
-import models
 
-from crud import AuthorRepository, BookRepository
-
-import schemas
+from authors.crud import AuthorRepository
 
 router = APIRouter(
     prefix="/books",
@@ -43,16 +43,15 @@ async def create_book(
     new_book = schemas.BookCreate(
         title=title,
         release_date=date(
-            release_date_split[0],
-            release_date_split[1],
-            release_date_split[2]
+            release_date_split[0], release_date_split[1], release_date_split[2]
         ),
         number_of_pages=int(number_of_pages),
         author_id=int(author_id),
-        image_url=f"/static/{author_id}/{title}.jpg")
+        image_url=f"/static/{author_id}/{title}.jpg",
+    )
     return BookRepository().create(new_book)
 
 
-@ router.delete("/{book_id}")
+@router.delete("/{book_id}")
 async def delete_book(book_id: int) -> schemas.Book:
     return BookRepository().delete(book_id)
