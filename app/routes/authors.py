@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Response
 
-from . import schemas
-from .crud import AuthorRepository
+from app import schemas
+from app.crud.authors import AuthorRepository
 
 router = APIRouter(
     prefix="/authors",
@@ -25,5 +25,7 @@ async def create_author(author: schemas.AuthorCreate) -> schemas.Author:
 
 
 @router.delete("/{author_id}")
-async def delete_author(author_id: int) -> schemas.Author:
-    return AuthorRepository().delete(author_id)
+async def delete_author(author_id: int) -> Response:
+    if AuthorRepository().delete(author_id):
+        return Response(status_code=204)
+    raise HTTPException(status_code=404, detail="Author not found")

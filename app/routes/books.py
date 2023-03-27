@@ -1,11 +1,11 @@
 import os
 from datetime import date
 
-from . import schemas
-from .crud import BookRepository
-from fastapi import APIRouter, Form, UploadFile
+from app import schemas
+from app.crud.books import BookRepository
+from app.crud.authors import AuthorRepository
+from fastapi import APIRouter, Form, HTTPException, Response, UploadFile
 
-from authors.crud import AuthorRepository
 
 router = APIRouter(
     prefix="/books",
@@ -52,6 +52,8 @@ async def create_book(
     return BookRepository().create(new_book)
 
 
-@router.delete("/{book_id}")
-async def delete_book(book_id: int) -> schemas.Book:
-    return BookRepository().delete(book_id)
+@router.delete("/{book_id}", status_code=204)
+async def delete_book(book_id: int) -> Response:
+    if BookRepository().delete(book_id):
+        return Response(status_code=204)
+    raise HTTPException(status_code=404, detail="Book not found")

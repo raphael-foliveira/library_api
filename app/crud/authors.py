@@ -1,7 +1,6 @@
 from fastapi import HTTPException
-from database import DatabaseManager
-
-from . import models, schemas
+from app.database import DatabaseManager
+from app import models, schemas
 
 
 class AuthorRepository:
@@ -9,10 +8,9 @@ class AuthorRepository:
         self.manager = DatabaseManager(models.Author)
 
     def find(self, author_id: int) -> schemas.Author:
-        try:
-            return self.manager.find(author_id)
-        except:
+        if (author := self.manager.find(author_id)) is None:
             raise HTTPException(status_code=404, detail="Author not found")
+        return author
 
     def list(self) -> list[schemas.Author]:
         return self.manager.list()
@@ -27,7 +25,6 @@ class AuthorRepository:
         except:
             raise HTTPException(status_code=400, detail="Author could not be created")
 
-    def delete(self, author_id) -> schemas.Author:
+    def delete(self, author_id) -> bool:
         author = self.manager.find(author_id)
-        self.manager.delete(author)
-        return author
+        return self.manager.delete(author)

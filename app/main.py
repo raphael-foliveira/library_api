@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import books, authors
-from database import Base, engine
+from app.routes import authors, books
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(responses={404: {"error": "not found"}})
 
@@ -16,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="./uploads"), name="uploads")
+app.mount("/static", StaticFiles(directory="./app/uploads"), name="uploads")
 
-app.include_router(books.routes.router)
-app.include_router(authors.routes.router)
+app.include_router(books.router)
+app.include_router(authors.router)

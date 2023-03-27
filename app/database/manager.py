@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from config import Session
+from .config import Session
 
 
 class DatabaseManager:
@@ -13,8 +13,6 @@ class DatabaseManager:
     def find(self, id: int):
         with Session() as db:
             object = db.query(self.entity_class).filter_by(id=id).first()
-            if object is None:
-                raise Exception("object not found")
             return object
 
     def create(self, new_object: BaseModel):
@@ -32,7 +30,6 @@ class DatabaseManager:
             with Session() as db:
                 db.delete(object)
                 db.commit()
-                db.refresh(object)
                 return True
         except:
             return False

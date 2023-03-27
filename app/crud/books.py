@@ -1,6 +1,7 @@
-from database import DatabaseManager
-
-from . import schemas, models
+from fastapi import HTTPException
+from fastapi import Response
+from app.database import DatabaseManager
+from app import models, schemas
 
 
 class BookRepository:
@@ -8,7 +9,9 @@ class BookRepository:
         self.manager = DatabaseManager(models.Book)
 
     def find(self, book_id: int) -> schemas.Book:
-        return self.manager.find(book_id)
+        if (book := self.manager.find(book_id)) is None:
+            raise HTTPException(status_code=404, detail="Book not found")
+        return book
 
     def list(self) -> list[schemas.Book]:
         return self.manager.list()
@@ -25,8 +28,6 @@ class BookRepository:
             return new_book
         raise
 
-    def delete(self, book_id) -> schemas.Book:
+    def delete(self, book_id) -> bool:
         book = self.manager.find(book_id)
-        if self.manager.delete(book):
-            return book
-        raise
+        return self.manager.delete(book)
