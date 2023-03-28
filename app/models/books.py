@@ -14,3 +14,6 @@ class Book(Base):
     image_url = Column(String, nullable=True)
 
     author = relationship("Author", back_populates="books", lazy="joined")
+
+    def __eq__(self, other):
+        return self.id == other.id

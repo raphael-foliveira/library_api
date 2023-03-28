@@ -1,0 +1,2 @@
+class TestAuthorsRoutes:
+    pass

@@ -1,0 +1,2 @@
+class TestBooksRoutes:
+    pass

@@ -11,3 +11,6 @@ class Author(Base):
     last_name = Column(String)
 
     books = relationship("Book", back_populates="author", lazy="joined")
+
+    def __eq__(self, other):
+        return self.id == other.id

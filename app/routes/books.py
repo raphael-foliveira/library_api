@@ -26,18 +26,13 @@ async def retrieve_book(book_id: int) -> schemas.Book:
 
 @router.post("/")
 async def create_book(
-    image: UploadFile,
+    image: UploadFile | None,
     title: str = Form(),
     release_date: str = Form(),
     number_of_pages: str = Form(),
     author_id: str = Form(),
 ) -> schemas.Book:
     author = AuthorRepository().find(int(author_id))
-    upload_path = f"./uploads/{author.id}"
-    os.makedirs(upload_path, exist_ok=True)
-    image_path = upload_path + f"/{title}.jpg"
-    with open(image_path, "wb") as upload:
-        upload.write(image.file.read())
 
     release_date_split = [int(d) for d in release_date.split("-")]
     new_book = schemas.BookCreate(
@@ -47,8 +42,15 @@ async def create_book(
         ),
         number_of_pages=int(number_of_pages),
         author_id=int(author_id),
-        image_url=f"/static/{author_id}/{title}.jpg",
     )
+    if image is not None:
+        upload_path = f"./uploads/{author.id}"
+        os.makedirs(upload_path, exist_ok=True)
+        image_path = upload_path + f"/{title}.jpg"
+        with open(image_path, "wb") as upload:
+            upload.write(image.file.read())
+        new_book.image_url = f"/static/{author_id}/{title}.jpg"
+
     return BookRepository().create(new_book)
 
 

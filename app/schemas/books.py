@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -7,14 +8,14 @@ class BookBase(BaseModel):
     release_date: date
     number_of_pages: int
     author_id: int
-    image_url: str | None
+    image_url: Optional[str] = None
 
     class Config:
         orm_mode = True
 
 
 class BookCreate(BookBase):
-    pass
+    ...
 
 
 class Book(BookBase):

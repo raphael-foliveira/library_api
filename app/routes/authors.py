@@ -21,7 +21,10 @@ async def retrieve_author(author_id: int) -> schemas.Author:
 
 @router.post("/")
 async def create_author(author: schemas.AuthorCreate) -> schemas.Author:
-    return AuthorRepository().create(author)
+    try:
+        return AuthorRepository().create(author)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=e.args[0])
 
 
 @router.delete("/{author_id}")
