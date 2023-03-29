@@ -26,3 +26,7 @@ class AuthorRepository:
     def delete(self, author_id) -> bool:
         author = self.find(author_id)
         return self.manager.delete(author)
+
+
+def get_author_repository():
+    return AuthorRepository()

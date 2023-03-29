@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="./app/uploads"), name="uploads")
+app.mount("/static", StaticFiles(directory="./uploads"), name="uploads")
 
 app.include_router(books.router)
 app.include_router(authors.router)

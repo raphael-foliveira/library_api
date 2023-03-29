@@ -1,30 +1,17 @@
 import pytest
-from tests.database.mock_config import mock_engine, mock_session
-from app.models.books import Book
+
 from app.crud.books import BookRepository
-from unittest.mock import Mock
-from datetime import date
-from faker import Faker
-
-fake = Faker()
-
-
-def fake_book():
-    return Book(
-        title=fake.name(),
-        author_id=fake.random_int(min=1, max=100),
-        release_date=date.today(),
-        number_of_pages=fake.random_int(min=100, max=1000),
-        image_url=fake.url(),
-    )
+from app.models.books import Book
+from tests.database.mock_config import mock_engine, mock_session
+from tests.factories import fake_book_model
 
 
 class TestBooksRepository:
     def setup_method(self):
         self.repository = BookRepository(mock_engine)
         with mock_session() as session:
-            session.add(fake_book())
-            session.add(fake_book())
+            session.add(fake_book_model())
+            session.add(fake_book_model())
             session.commit()
 
     def test_list(self):
@@ -32,7 +19,7 @@ class TestBooksRepository:
 
     def test_create(self):
         initial_length = len(self.repository.list())
-        book_mock = fake_book()
+        book_mock = fake_book_model()
         new_book = self.repository.create(book_mock)
         assert new_book in self.repository.list()
         assert new_book.title == book_mock.title

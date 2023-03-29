@@ -30,3 +30,7 @@ class BookRepository:
     def delete(self, book_id) -> bool:
         book = self.find(book_id)
         return self.manager.delete(book)
+
+
+def get_book_repository():
+    return BookRepository()

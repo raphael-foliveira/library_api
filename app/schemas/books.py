@@ -10,9 +10,6 @@ class BookBase(BaseModel):
     author_id: int
     image_url: Optional[str] = None
 
-    class Config:
-        orm_mode = True
-
 
 class BookCreate(BookBase):
     ...

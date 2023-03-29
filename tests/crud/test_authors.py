@@ -2,21 +2,15 @@ import pytest
 from app.crud.authors import AuthorRepository
 from app.models.authors import Author
 from tests.database.mock_config import mock_engine, mock_session
-from faker import Faker
-
-fake = Faker()
-
-
-def fake_author():
-    return Author(first_name=fake.name(), last_name=fake.name())
+from tests.factories import fake_author_model
 
 
 class TestAuthorsRepository:
     def setup_method(self):
         self.repository = AuthorRepository(mock_engine)
         with mock_session() as session:
-            session.add(fake_author())
-            session.add(fake_author())
+            session.add(fake_author_model())
+            session.add(fake_author_model())
             session.commit()
 
     def test_list(self):
@@ -24,7 +18,7 @@ class TestAuthorsRepository:
 
     def test_create(self):
         initial_length = len(self.repository.list())
-        author_data = fake_author()
+        author_data = fake_author_model()
         new_author = self.repository.create(author_data)
         assert new_author.first_name == author_data.first_name
         assert len(self.repository.list()) > initial_length
