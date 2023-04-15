@@ -23,10 +23,11 @@ class AuthorRepository:
         self.manager.create(new_author)
         return new_author
 
-    def delete(self, author_id) -> bool:
+    def delete(self, author_id: int) -> bool:
         author = self.find(author_id)
         return self.manager.delete(author)
 
 
 def get_author_repository():
     return AuthorRepository()
+    

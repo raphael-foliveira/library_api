@@ -27,7 +27,7 @@ class BookRepository:
         self.manager.create(new_book)
         return new_book
 
-    def delete(self, book_id) -> bool:
+    def delete(self, book_id: int) -> bool:
         book = self.find(book_id)
         return self.manager.delete(book)
 

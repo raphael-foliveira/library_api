@@ -4,3 +4,5 @@ __pycache__
 uploads
 htmlcov
 .coverage
+.vscode
+.pytest_cache

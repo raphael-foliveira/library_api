@@ -8,7 +8,7 @@ from app.crud.authors import AuthorRepository, get_author_repository
 from app.crud.books import BookRepository, get_book_repository
 
 
-def get_upload_path(authorId):
+def get_upload_path(authorId: str):
     return f"./uploads/{authorId}"
 
 
@@ -47,7 +47,7 @@ async def create_book(
     author_repository: AuthorRepository = Depends(get_author_repository),
 ) -> schemas.Book:
     try:
-        author = author_repository.find(int(author_id))
+        author_repository.find(int(author_id))
 
         release_date_split = [int(d) for d in release_date.split("-")]
         new_book = schemas.BookCreate(

@@ -25,7 +25,7 @@ class DatabaseManager:
             db.flush()
             return new_object
 
-    def delete(self, object):
+    def delete(self, object: BaseModel):
         try:
             with self.session() as db:
                 db.delete(object)
