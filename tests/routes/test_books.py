@@ -1,4 +1,5 @@
 import io
+from typing import Any, Mapping
 from unittest.mock import patch
 from fastapi import HTTPException
 
@@ -15,14 +16,14 @@ client = TestClient(app)
 
 class TestBooksRoutes:
     @patch("app.crud.books.BookRepository.list")
-    def test_get_all_books(self, mock_repository):
+    def test_get_all_books(self, mock_repository: Any):
         mock_repository.return_value = [fake_book_schema()]
         response = client.get("/books/")
         assert response.status_code == 200
         assert isinstance(response.json(), list)
 
     @patch("app.crud.books.BookRepository.find")
-    def test_find_book(self, mock_repository):
+    def test_find_book(self, mock_repository: Any):
         mock_book = fake_book_schema()
         mock_repository.return_value = mock_book
         response = client.get(f"/books/{mock_book.id}")
@@ -36,7 +37,10 @@ class TestBooksRoutes:
     @patch("app.crud.authors.AuthorRepository.find")
     @patch("app.crud.books.BookRepository.create")
     def test_create_book(
-        self, mock_book_repository, mock_author_repository, mock_upload_path
+        self,
+        mock_book_repository: Any,
+        mock_author_repository: Any,
+        mock_upload_path: Any,
     ):
         with TemporaryDirectory() as tmpdir:
             mock_upload_path.return_value = tmpdir
@@ -45,7 +49,7 @@ class TestBooksRoutes:
             mock_book_repository.return_value = book
             mock_author_repository.return_value = fake_author_schema()
 
-            form_data = {
+            form_data: Mapping[str, Any] = {
                 "title": book.title,
                 "release_date": book.release_date.strftime("%Y-%m-%d"),
                 "number_of_pages": str(book.number_of_pages),
@@ -69,7 +73,7 @@ class TestBooksRoutes:
     @patch("app.crud.books.BookRepository.delete")
     def test_delete_book(
         self,
-        mock_repository,
+        mock_repository: Any,
     ):
         mock_repository.return_value = True
         response = client.delete("/books/1")
@@ -79,5 +83,5 @@ class TestBooksRoutes:
         assert response.status_code == 404
 
     def test_get_upload_path(self):
-        upload_path = get_upload_path(1)
+        upload_path = get_upload_path("1")
         assert upload_path == "./uploads/1"

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from app.crud.authors import AuthorRepository
 from app.routes import authors, books
 
 # Base.metadata.create_all(bind=engine)
@@ -18,4 +19,4 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="./uploads"), name="uploads")
 
 app.include_router(books.router)
-app.include_router(authors.router)
+app.include_router(authors.AuthorRouter(AuthorRepository()).router)
