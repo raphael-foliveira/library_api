@@ -4,8 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from app.crud.authors import AuthorRepository
 from app.routes import authors, books
 
-# Base.metadata.create_all(bind=engine)
-
 app = FastAPI(responses={404: {"error": "not found"}})
 
 app.add_middleware(
