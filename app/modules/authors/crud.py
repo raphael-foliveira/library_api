@@ -1,11 +1,12 @@
-from app.crud.repository import Repostory
+from app.interfaces.repository import Repository
 from app.database import DatabaseManager
-from app import models, schemas
+from . import schemas
+from . import models
 from app.database.config import engine
 from sqlalchemy.engine import Engine
 
 
-class AuthorRepository(Repostory):
+class AuthorRepository(Repository):
     def __init__(self, engine: Engine = engine):
         self.manager = DatabaseManager(models.Author, engine)
 

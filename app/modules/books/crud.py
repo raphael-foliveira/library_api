@@ -1,4 +1,4 @@
-from app import models, schemas
+from . import models, schemas
 from app.database import DatabaseManager
 from app.database.config import engine
 from sqlalchemy.engine import Engine

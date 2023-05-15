@@ -1,6 +1,6 @@
-from app import schemas
+from . import schemas
 from fastapi import HTTPException, Response
-from app.authors.crud import AuthorRepository
+from app.modules.authors.crud import AuthorRepository
 
 
 class AuthorHandler:

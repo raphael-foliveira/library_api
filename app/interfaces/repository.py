@@ -2,19 +2,19 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class Repostory(ABC):
+class Repository(ABC):
     @abstractmethod
     def find(self, id: int) -> Any:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def list(self) -> list[Any]:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def create(self, model: Any) -> Any:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def delete(self, author_id: int) -> bool:
-        pass
+        raise NotImplementedError()

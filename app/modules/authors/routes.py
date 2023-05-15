@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.authors.crud import AuthorRepository
-from app.authors.handlers import AuthorHandler
+from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.handlers import AuthorHandler
 
 
 def get_author_router():
