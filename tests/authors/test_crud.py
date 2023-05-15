@@ -1,6 +1,9 @@
+# type:ignore
+
 import pytest
-from app.crud.authors import AuthorRepository
-from app.models.authors import Author
+from app.authors.crud import AuthorRepository
+from app.authors.models import Author
+from app.schemas.authors import AuthorCreate
 from tests.database.mock_config import mock_engine, mock_session
 from tests.factories import fake_author_model
 
@@ -18,7 +21,7 @@ class TestAuthorsRepository:
 
     def test_create(self):
         initial_length = len(self.repository.list())
-        author_data = fake_author_model()
+        author_data: AuthorCreate = fake_author_model()
         new_author = self.repository.create(author_data)
         assert new_author.first_name == author_data.first_name
         assert len(self.repository.list()) > initial_length

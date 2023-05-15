@@ -1,9 +1,11 @@
+# type: ignore
+
 import io
 from typing import Any, Mapping
 from unittest.mock import patch
 from fastapi import HTTPException
 
-from app.routes.books import get_upload_path
+from app.modules.books.handlers import get_upload_path
 
 from fastapi.testclient import TestClient
 

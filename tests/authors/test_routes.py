@@ -1,3 +1,5 @@
+# type: ignore
+
 from typing import Any
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
