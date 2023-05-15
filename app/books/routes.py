@@ -4,8 +4,8 @@ from datetime import date
 from fastapi import APIRouter, Depends, Form, HTTPException, Response, UploadFile
 
 from app import schemas
-from app.crud.authors import AuthorRepository, get_author_repository
-from app.crud.books import BookRepository, get_book_repository
+from app.authors.crud import AuthorRepository, get_author_repository
+from app.books.crud import BookRepository, get_book_repository
 
 
 def get_upload_path(authorId: str):
