@@ -1,7 +1,5 @@
 from fastapi import APIRouter
-
 from app.modules.books.handlers import BooksHandler
-
 from app.modules.books.crud import BookRepository
 
 
