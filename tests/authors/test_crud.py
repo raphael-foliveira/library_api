@@ -1,9 +1,9 @@
 # type:ignore
 
 import pytest
-from app.authors.crud import AuthorRepository
-from app.authors.models import Author
-from app.schemas.authors import AuthorCreate
+from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.models import Author
+from app.modules.authors.schemas import AuthorCreate
 from tests.database.mock_config import mock_engine, mock_session
 from tests.factories import fake_author_model
 

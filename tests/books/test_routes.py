@@ -1,5 +1,3 @@
-# type: ignore
-
 import io
 from typing import Any, Mapping
 from unittest.mock import patch
@@ -17,14 +15,14 @@ client = TestClient(app)
 
 
 class TestBooksRoutes:
-    @patch("app.crud.books.BookRepository.list")
+    @patch("app.modules.books.crud.BookRepository.list")
     def test_get_all_books(self, mock_repository: Any):
         mock_repository.return_value = [fake_book_schema()]
         response = client.get("/books/")
         assert response.status_code == 200
         assert isinstance(response.json(), list)
 
-    @patch("app.crud.books.BookRepository.find")
+    @patch("app.modules.books.crud.BookRepository.find")
     def test_find_book(self, mock_repository: Any):
         mock_book = fake_book_schema()
         mock_repository.return_value = mock_book
@@ -35,9 +33,9 @@ class TestBooksRoutes:
         response = client.get(f"/books/650")
         assert response.status_code == 404
 
-    @patch("app.routes.books.get_upload_path")
-    @patch("app.crud.authors.AuthorRepository.find")
-    @patch("app.crud.books.BookRepository.create")
+    @patch("app.modules.books.handlers.get_upload_path")
+    @patch("app.modules.authors.crud.AuthorRepository.find")
+    @patch("app.modules.books.crud.BookRepository.create")
     def test_create_book(
         self,
         mock_book_repository: Any,
@@ -72,7 +70,7 @@ class TestBooksRoutes:
             )
             assert response.status_code == 400
 
-    @patch("app.crud.books.BookRepository.delete")
+    @patch("app.modules.books.crud.BookRepository.delete")
     def test_delete_book(
         self,
         mock_repository: Any,

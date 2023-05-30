@@ -1,5 +1,3 @@
-# type: ignore
-
 from typing import Any
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
@@ -12,7 +10,7 @@ client = TestClient(app)
 
 
 class TestAuthorsRoutes:
-    @patch("app.crud.authors.AuthorRepository.list")
+    @patch("app.modules.authors.crud.AuthorRepository.list")
     def test_get_all_authors(self, mock_repository: Any):
         author = fake_author_schema()
         mock_repository.return_value = [author]
@@ -20,7 +18,7 @@ class TestAuthorsRoutes:
         assert response.status_code == 200
         assert response.json() == [author]
 
-    @patch("app.crud.authors.AuthorRepository.find")
+    @patch("app.modules.authors.crud.AuthorRepository.find")
     def test_find_author(self, mock_repository: Any):
         author = fake_author_schema()
         mock_repository.return_value = author
@@ -31,7 +29,7 @@ class TestAuthorsRoutes:
         response = client.get(f"/authors/650")
         assert response.status_code == 404
 
-    @patch("app.crud.authors.AuthorRepository.create")
+    @patch("app.modules.authors.crud.AuthorRepository.create")
     def test_create_author(self, mock_repository: Any):
         mock_author = fake_author_schema()
         mock_repository.return_value = mock_author
@@ -46,7 +44,7 @@ class TestAuthorsRoutes:
         )
         assert response.status_code == 400
 
-    @patch("app.crud.authors.AuthorRepository.delete")
+    @patch("app.modules.authors.crud.AuthorRepository.delete")
     def teste_delete_author(self, mock_repository: Any):
         mock_repository.return_value = True
         response = client.delete("/authors/1")

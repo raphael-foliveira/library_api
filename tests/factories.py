@@ -1,6 +1,7 @@
 from faker import Faker
-from app.models import Author, Book
-from app import schemas
+from app.modules.authors.models import Author
+from app.modules.books.models import Book
+from app.modules.authors import schemas
 from datetime import date
 
 fake = Faker()

@@ -2,7 +2,8 @@ from logging.config import fileConfig
 
 from alembic import context
 from app.database.config import Base, engine
-from app.models import *
+from app.modules.authors.models import *
+from app.modules.books.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

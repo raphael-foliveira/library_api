@@ -2,8 +2,8 @@
 
 import pytest
 
-from app.books.crud import BookRepository
-from app.books.models import Book
+from app.modules.books.crud import BookRepository
+from app.modules.books.models import Book
 from tests.database.mock_config import mock_engine, mock_session
 from tests.factories import fake_book_model
 
