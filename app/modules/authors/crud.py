@@ -1,13 +1,15 @@
-from app.interfaces.repository import Repository
-from app.database import DatabaseManager
-from . import schemas
-from . import models
-from app.database.config import engine
+from fastapi import Depends
 from sqlalchemy.engine import Engine
+
+from app.database import DatabaseManager
+from app.database.config import engine
+from app.interfaces.repository import Repository
+
+from . import models, schemas
 
 
 class AuthorRepository(Repository):
-    def __init__(self, engine: Engine = engine):
+    def __init__(self, engine: Engine):
         self.manager = DatabaseManager(models.Author, engine)
 
     def find(self, id: int) -> schemas.Author:
@@ -31,4 +33,4 @@ class AuthorRepository(Repository):
 
 
 def get_author_repository():
-    return AuthorRepository()
+    return AuthorRepository(engine)

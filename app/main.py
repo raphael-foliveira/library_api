@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.modules.authors.routes import get_author_router
-from app.modules.books.routes import get_books_router
+from app.modules.authors.routes import AuthorsRouter
+from app.modules.books.routes import BooksRouter
 
 app = FastAPI(responses={404: {"error": "not found"}})
 
@@ -16,5 +16,5 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="./uploads"), name="uploads")
 
-app.include_router(get_books_router())
-app.include_router(get_author_router())
+app.include_router(BooksRouter(prefix="/books", tags=["books"]))
+app.include_router(AuthorsRouter(prefix="/authors", tags=["authors"]))
