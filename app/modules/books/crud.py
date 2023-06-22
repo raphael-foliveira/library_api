@@ -1,11 +1,13 @@
-from . import models, schemas
+from fastapi import Depends
+from sqlalchemy.engine import Engine
+
 from app.database import DatabaseManager
 from app.database.config import engine
-from sqlalchemy.engine import Engine
+from . import models, schemas
 
 
 class BookRepository:
-    def __init__(self, engine: Engine = engine):
+    def __init__(self, engine: Engine):
         self.manager = DatabaseManager(models.Book, engine)
 
     def find(self, book_id: int) -> schemas.Book:
@@ -33,4 +35,4 @@ class BookRepository:
 
 
 def get_book_repository():
-    return BookRepository()
+    return BookRepository(engine)

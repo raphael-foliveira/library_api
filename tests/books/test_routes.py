@@ -2,83 +2,85 @@ import io
 from typing import Any, Mapping
 from unittest.mock import patch
 from fastapi import HTTPException
+from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.schemas import AuthorCreate
+from app.modules.books.crud import BookRepository
 
 from app.modules.books.handlers import get_upload_path
 
 from fastapi.testclient import TestClient
 
 from app.main import app
-from tests.factories import fake_author_schema, fake_book_schema
+from app.database.config import engine
+from app.modules.books.schemas import BookCreate
+from tests.factories import (
+    fake_author_create,
+    fake_author_schema,
+    fake_book_create,
+    fake_book_schema,
+)
 from tempfile import TemporaryDirectory
 
 client = TestClient(app)
 
 
 class TestBooksRoutes:
-    @patch("app.modules.books.crud.BookRepository.list")
-    def test_get_all_books(self, mock_repository: Any):
-        mock_repository.return_value = [fake_book_schema()]
+    book_repository = BookRepository(engine)
+    author_repository = AuthorRepository(engine)
+
+    def test_get_all_books(
+        self,
+    ):
         response = client.get("/books/")
         assert response.status_code == 200
         assert isinstance(response.json(), list)
 
-    @patch("app.modules.books.crud.BookRepository.find")
-    def test_find_book(self, mock_repository: Any):
-        mock_book = fake_book_schema()
-        mock_repository.return_value = mock_book
+    def test_find_book(self):
+        mock_author_create = fake_author_create()
+        mock_author = self.author_repository.create(mock_author_create)
+        mock_book_create = fake_book_create()
+        mock_book_create.author_id = mock_author.id  # type: ignore
+        mock_book = self.book_repository.create(mock_book_create)
+
+        print(mock_author)
+        print(mock_book_create)
         response = client.get(f"/books/{mock_book.id}")
         assert response.status_code == 200
-        assert response.json().get("id") == mock_book.id
-        mock_repository.side_effect = HTTPException(404, "Not Found")
+
+    def test_find_non_existing_book(self):
         response = client.get(f"/books/650")
         assert response.status_code == 404
 
-    @patch("app.modules.books.handlers.get_upload_path")
-    @patch("app.modules.authors.crud.AuthorRepository.find")
-    @patch("app.modules.books.crud.BookRepository.create")
-    def test_create_book(
-        self,
-        mock_book_repository: Any,
-        mock_author_repository: Any,
-        mock_upload_path: Any,
-    ):
-        with TemporaryDirectory() as tmpdir:
-            mock_upload_path.return_value = tmpdir
+    def test_create_book(self):
+        mock_author_create = fake_author_create()
+        mock_author = self.author_repository.create(mock_author_create)
+        mock_book = fake_book_schema()
+        mock_book.author_id = mock_author.id
 
-            book = fake_book_schema()
-            mock_book_repository.return_value = book
-            mock_author_repository.return_value = fake_author_schema()
+        form_data: Mapping[str, Any] = {
+            "title": mock_book.title,
+            "release_date": mock_book.release_date.strftime("%Y-%m-%d"),
+            "number_of_pages": str(mock_book.number_of_pages),
+            "author_id": mock_book.author_id,
+        }
+        file_data = io.BytesIO(b"test_image_content")
+        response = client.post(
+            "/books/",
+            data=form_data,
+            files={"image": ("test_image.jpg", file_data, "image/jpeg")},
+        )
+        assert response.status_code == 201
 
-            form_data: Mapping[str, Any] = {
-                "title": book.title,
-                "release_date": book.release_date.strftime("%Y-%m-%d"),
-                "number_of_pages": str(book.number_of_pages),
-                "author_id": book.author_id,
-            }
-            file_data = io.BytesIO(b"test_image_content")
-            response = client.post(
-                "/books/",
-                data=form_data,
-                files={"image": ("test_image.jpg", file_data, "image/jpeg")},
-            )
-            assert response.status_code == 201
-            mock_book_repository.side_effect = HTTPException(400, "Bad Request")
-            response = client.post(
-                "/books/",
-                data=form_data,
-                files={"image": ("test_image.jpg", file_data, "image/jpeg")},
-            )
-            assert response.status_code == 400
-
-    @patch("app.modules.books.crud.BookRepository.delete")
-    def test_delete_book(
-        self,
-        mock_repository: Any,
-    ):
-        mock_repository.return_value = True
-        response = client.delete("/books/1")
+    def test_delete_book(self):
+        mock_author_create = fake_author_create()
+        mock_author = self.author_repository.create(mock_author_create)
+        mock_book_create = fake_book_create()
+        mock_book_create.author_id = mock_author.id  # type: ignore
+        mock_book = self.book_repository.create(mock_book_create)
+        response = client.delete(f"/books/{mock_book.id}")
         assert response.status_code == 204
-        mock_repository.return_value = False
+
+    def test_delete_non_existing_book(self):
         response = client.get(f"/books/650")
         assert response.status_code == 404
 
