@@ -15,7 +15,7 @@ class Book(Base):
     image_url = Column(String, nullable=True)
 
     author = relationship(
-        "Author", back_populates="books", lazy="joined", cascade="all, delete-orphan"
+        "Author", back_populates="books", lazy="joined", cascade="all, delete"
     )
 
     def __eq__(self, other: Any):
