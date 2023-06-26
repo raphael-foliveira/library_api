@@ -1,16 +1,14 @@
-# type:ignore
-
 import pytest
 from app.modules.authors.crud import AuthorRepository
 from app.modules.authors.models import Author
 from app.modules.authors.schemas import AuthorCreate
-from tests.database.mock_config import mock_engine, mock_session
+from tests.database.mock_config import mock_session
 from tests.factories import fake_author_model
 
 
 class TestAuthorsRepository:
     def setup_method(self):
-        self.repository = AuthorRepository(mock_engine)
+        self.repository = AuthorRepository(mock_session)
         with mock_session() as session:
             session.add(fake_author_model())
             session.add(fake_author_model())

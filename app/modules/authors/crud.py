@@ -1,16 +1,17 @@
 from fastapi import Depends
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.database import DatabaseManager
-from app.database.config import engine
+from app.database.config import session
 from app.interfaces.repository import Repository
 
 from . import models, schemas
 
 
 class AuthorRepository(Repository):
-    def __init__(self, engine: Engine):
-        self.manager = DatabaseManager(models.Author, engine)
+    def __init__(self, session_maker: sessionmaker[Session] = session):
+        self.manager = DatabaseManager(models.Author, session_maker)
 
     def find(self, id: int) -> schemas.Author:
         if (author := self.manager.find(id)) is None:
@@ -33,4 +34,4 @@ class AuthorRepository(Repository):
 
 
 def get_author_repository():
-    return AuthorRepository(engine)
+    return AuthorRepository()

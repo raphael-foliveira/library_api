@@ -1,12 +1,13 @@
+from fastapi import Depends
 from pydantic import BaseModel
 from sqlalchemy import Engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 
 class DatabaseManager:
-    def __init__(self, entity_class: type, engine: Engine):
+    def __init__(self, entity_class: type, session_maker: sessionmaker[Session]):
         self.entity_class = entity_class
-        self.session = sessionmaker(bind=engine)
+        self.session = session_maker
 
     def list(self):
         with self.session() as db:
