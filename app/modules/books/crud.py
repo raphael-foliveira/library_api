@@ -1,5 +1,3 @@
-from fastapi import Depends
-from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from app.database import DatabaseManager
@@ -35,5 +33,5 @@ class BookRepository:
         return self.manager.delete(book)
 
 
-def get_book_repository():
+def get_books_repository():
     return BookRepository()

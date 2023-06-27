@@ -33,5 +33,4 @@ class AuthorRepository(Repository):
         return self.manager.delete(author)
 
 
-def get_author_repository():
-    return AuthorRepository()
+

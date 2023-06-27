@@ -1,23 +1,31 @@
 from datetime import date
 import os
 from fastapi import APIRouter, Depends, Form, HTTPException, Response, UploadFile
-from app.modules.authors.crud import AuthorRepository, get_author_repository
+from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.routes import get_author_repository
 from app.modules.books import schemas
-from app.modules.books.handlers import get_upload_path
-from app.modules.books.crud import BookRepository, get_book_repository
+from app.modules.books.crud import BookRepository, get_books_repository
 
 
 books_router = APIRouter(prefix="/books", tags=["books"])
 
 
+def get_upload_path(authorId: str):
+    return f"./uploads/{authorId}"
+
+
+def get_books_repository():
+    return BookRepository()
+
+
 @books_router.get("/")
-def list_books(repository: BookRepository = Depends(get_book_repository)):
+def list_books(repository: BookRepository = Depends(get_books_repository)):
     return repository.list()
 
 
 @books_router.get("/{book_id}/")
 def retrieve_book(
-    book_id: int, repository: BookRepository = Depends(get_book_repository)
+    book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
     try:
         return repository.find(book_id)
@@ -62,7 +70,7 @@ async def create_book(
 
 @books_router.delete("/{book_id}/")
 def delete_book(
-    book_id: int, repository: BookRepository = Depends(get_book_repository)
+    book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
     if repository.delete(book_id):
         return Response(status_code=204)

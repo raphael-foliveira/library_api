@@ -3,7 +3,7 @@ from typing import Any, Mapping
 from app.modules.authors.crud import AuthorRepository
 from app.modules.books.crud import BookRepository
 
-from app.modules.books.handlers import get_upload_path
+from app.modules.books.routes import get_upload_path
 
 from fastapi.testclient import TestClient
 

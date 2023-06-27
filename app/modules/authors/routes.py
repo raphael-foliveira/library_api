@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
-from app.modules.authors.crud import AuthorRepository, get_author_repository
+from app.modules.authors.crud import AuthorRepository
 from app.modules.authors.schemas import AuthorCreate
 
 authors_router = APIRouter(prefix="/authors", tags=["authors"])
+
+
+def get_author_repository():
+    return AuthorRepository()
 
 
 @authors_router.get("/")
