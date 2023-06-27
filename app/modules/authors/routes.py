@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from app.modules.authors.crud import AuthorRepository
 from app.modules.authors.schemas import AuthorCreate
+from app.database.config import session
 
 authors_router = APIRouter(prefix="/authors", tags=["authors"])
 
 
 def get_author_repository():
-    return AuthorRepository()
+    return AuthorRepository(session)
 
 
 @authors_router.get("/")
@@ -24,7 +25,7 @@ def retrieve_author(
         raise HTTPException(status_code=404, detail=e.args[0])
 
 
-@authors_router.post("/")
+@authors_router.post("/", status_code=201)
 def create_author(
     author: AuthorCreate, repository: AuthorRepository = Depends(get_author_repository)
 ):

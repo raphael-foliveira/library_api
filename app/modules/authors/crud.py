@@ -1,8 +1,6 @@
-from fastapi import Depends
-from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from app.database import DatabaseManager
+from app.database.manager import DatabaseManager
 from app.database.config import session
 from app.interfaces.repository import Repository
 
@@ -10,7 +8,7 @@ from . import models, schemas
 
 
 class AuthorRepository(Repository):
-    def __init__(self, session_maker: sessionmaker[Session] = session):
+    def __init__(self, session_maker: sessionmaker[Session]):
         self.manager = DatabaseManager(models.Author, session_maker)
 
     def find(self, id: int) -> schemas.Author:
@@ -31,6 +29,3 @@ class AuthorRepository(Repository):
     def delete(self, author_id: int) -> bool:
         author = self.find(author_id)
         return self.manager.delete(author)
-
-
-

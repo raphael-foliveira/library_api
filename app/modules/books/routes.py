@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Response, UploadFil
 from app.modules.authors.crud import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from app.modules.books import schemas
-from app.modules.books.crud import BookRepository, get_books_repository
+from app.modules.books.crud import BookRepository
+from app.database.config import session
 
 
 books_router = APIRouter(prefix="/books", tags=["books"])
@@ -15,7 +16,7 @@ def get_upload_path(authorId: str):
 
 
 def get_books_repository():
-    return BookRepository()
+    return BookRepository(session)
 
 
 @books_router.get("/")
@@ -33,15 +34,15 @@ def retrieve_book(
         raise HTTPException(status_code=404, detail=e.args[0])
 
 
-@books_router.post("/")
+@books_router.post("/", status_code=201)
 async def create_book(
-    self,
     image: UploadFile | None = None,
     title: str = Form(),
     release_date: str = Form(),
     number_of_pages: str = Form(),
     author_id: str = Form(),
     author_repository: AuthorRepository = Depends(get_author_repository),
+    repository: BookRepository = Depends(get_books_repository),
 ) -> schemas.Book:
     try:
         author_repository.find(int(author_id))
@@ -63,7 +64,7 @@ async def create_book(
                 upload.write(image.file.read())
             new_book.image_url = f"/static/{author_id}/{title}.jpg"
 
-        return self.repository.create(new_book)
+        return repository.create(new_book)
     except Exception as e:
         raise HTTPException(status_code=400, detail=e.args[1])
 
@@ -72,6 +73,8 @@ async def create_book(
 def delete_book(
     book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
-    if repository.delete(book_id):
+    try:
+        repository.delete(book_id)
         return Response(status_code=204)
-    raise HTTPException(status_code=404, detail="Book not found")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=e.args[0])

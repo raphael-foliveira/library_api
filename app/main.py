@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.modules.authors.routes import authors_router
 from app.modules.books.routes import books_router
 
+
 app = FastAPI(responses={404: {"error": "not found"}})
 
 app.add_middleware(
