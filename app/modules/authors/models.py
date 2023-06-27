@@ -1,7 +1,7 @@
 from typing import Any
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.database.config import Base
 
 
 class Author(Base):

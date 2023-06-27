@@ -2,15 +2,35 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.authors.crud import AuthorRepository
-from tests.database.mock_config import mock_session
-from tests.factories import fake_author_create
+from app.modules.authors.routes import get_author_repository
+from tests.database.mock_config import mock_sessionmaker, mock_engine
+from app.database.config import Base
+from app.modules.authors.models import *
+from app.modules.books.models import *
+from tests.factories import fake_author_create, fake_author_model
 
 client = TestClient(app)
 
 
+def override_get_author_repository():
+    return AuthorRepository(mock_sessionmaker)
+
+
 class TestAuthorsRoutes:
+    @classmethod
+    def setup_class(cls):
+        app.dependency_overrides[get_author_repository] = override_get_author_repository
+        cls.repository = AuthorRepository(mock_sessionmaker)
+        Base.metadata.create_all(mock_engine)
+
     def setup_method(self):
-        self.repository = AuthorRepository(mock_session)
+        with mock_sessionmaker() as session:
+            author1 = fake_author_model()
+            author2 = fake_author_model()
+
+            session.add(author1)
+            session.add(author2)
+            session.commit()
 
     def test_get_all_authors(self):
         response = client.get("/authors")
@@ -43,3 +63,7 @@ class TestAuthorsRoutes:
     def test_delete_non_existing_author(self):
         response = client.get(f"/authors/650")
         assert response.status_code == 404
+
+    @classmethod
+    def teardown_class(cls):
+        Base.metadata.drop_all(mock_engine)

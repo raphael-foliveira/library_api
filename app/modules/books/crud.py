@@ -1,12 +1,12 @@
 from sqlalchemy.orm import sessionmaker, Session
 
-from app.database import DatabaseManager
+from app.database.manager import DatabaseManager
 from app.database.config import session
 from . import models, schemas
 
 
 class BookRepository:
-    def __init__(self, session_maker: sessionmaker[Session] = session):
+    def __init__(self, session_maker: sessionmaker[Session]):
         self.manager = DatabaseManager(models.Book, session_maker)
 
     def find(self, book_id: int) -> schemas.Book:
@@ -31,7 +31,3 @@ class BookRepository:
     def delete(self, book_id: int) -> bool:
         book = self.find(book_id)
         return self.manager.delete(book)
-
-
-def get_books_repository():
-    return BookRepository()

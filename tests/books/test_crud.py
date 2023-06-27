@@ -1,17 +1,35 @@
 import pytest
-
+from app.modules.authors.crud import AuthorRepository
 from app.modules.books.crud import BookRepository
+
 from app.modules.books.models import Book
-from tests.database.mock_config import mock_session
-from tests.factories import fake_book_model
+from tests.database.mock_config import mock_sessionmaker, mock_engine
+from app.database.config import Base
+from tests.factories import fake_author_model, fake_book_model
 
 
 class TestBooksRepository:
+    @classmethod
+    def setup_class(cls):
+        cls.author_repository = AuthorRepository(mock_sessionmaker)
+        cls.repository = BookRepository(mock_sessionmaker)
+        Base.metadata.create_all(mock_engine)
+
     def setup_method(self):
-        self.repository = BookRepository(mock_session)
-        with mock_session() as session:
-            session.add(fake_book_model())
-            session.add(fake_book_model())
+        with mock_sessionmaker() as session:
+            author1 = fake_author_model()
+            author2 = fake_author_model()
+
+            book1 = fake_book_model()
+            book1.author_id = author1.id  # type: ignore
+
+            book2 = fake_book_model()
+            book2.author_id = author2.id  # type: ignore
+
+            session.add(author1)
+            session.add(author2)
+            session.add(book1)
+            session.add(book2)
             session.commit()
 
     def test_list(self):
@@ -19,7 +37,9 @@ class TestBooksRepository:
 
     def test_create(self):
         initial_length = len(self.repository.list())
+        author_mock = self.author_repository.list()[0]
         book_mock = fake_book_model()
+        book_mock.author_id = author_mock.id  # type: ignore
         new_book = self.repository.create(book_mock)
         assert new_book in self.repository.list()
         assert new_book.title == book_mock.title
@@ -40,6 +60,10 @@ class TestBooksRepository:
             self.repository.find(650)
 
     def teardown_method(self):
-        with mock_session() as session:
+        with mock_sessionmaker() as session:
             session.query(Book).delete()
             session.commit()
+
+    @classmethod
+    def teardown_class(cls):
+        Base.metadata.drop_all(mock_engine)

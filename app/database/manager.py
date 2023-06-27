@@ -1,6 +1,4 @@
-from fastapi import Depends
 from pydantic import BaseModel
-from sqlalchemy import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
 
