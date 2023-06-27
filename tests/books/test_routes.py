@@ -1,7 +1,7 @@
 import io
-import os
 from typing import Mapping
 from fastapi.testclient import TestClient
+from copy import copy
 
 from app.main import app
 from app.modules.authors.routes import get_author_repository
@@ -46,19 +46,8 @@ class TestBooksRoutes:
             session.add(author2)
             session.add(book1)
             session.add(book2)
-            self.author1 = Author(
-                id=author1.id,
-                first_name=author1.first_name,
-                last_name=author1.last_name,
-            )
-            self.book1 = Book(
-                id=book1.id,
-                title=book1.title,
-                author_id=book1.author_id,
-                release_date=book1.release_date,
-                number_of_pages=book1.number_of_pages,
-                image_url=book1.image_url,
-            )
+            self.author1 = copy(author1)
+            self.book1 = copy(book1)
             session.commit()
 
     def test_get_all_books(self):
