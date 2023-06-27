@@ -12,7 +12,7 @@ class BookBase(BaseModel):
 
 
 class BookCreate(BookBase):
-    ...
+    pass
 
 
 class Book(BookBase):
