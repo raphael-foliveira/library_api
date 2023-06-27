@@ -2,14 +2,15 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.authors.crud import AuthorRepository
-from app.database.config import engine
+from tests.database.mock_config import mock_session
 from tests.factories import fake_author_create
 
 client = TestClient(app)
 
 
 class TestAuthorsRoutes:
-    repository = AuthorRepository(engine)
+    def setup_method(self):
+        self.repository = AuthorRepository(mock_session)
 
     def test_get_all_authors(self):
         response = client.get("/authors")

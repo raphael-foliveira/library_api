@@ -1,14 +1,13 @@
-from fastapi import Depends
-from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.database import DatabaseManager
-from app.database.config import engine
+from app.database.config import session
 from . import models, schemas
 
 
 class BookRepository:
-    def __init__(self, engine: Engine):
-        self.manager = DatabaseManager(models.Book, engine)
+    def __init__(self, session_maker: sessionmaker[Session] = session):
+        self.manager = DatabaseManager(models.Book, session_maker)
 
     def find(self, book_id: int) -> schemas.Book:
         if (book := self.manager.find(book_id)) is None:
@@ -34,5 +33,5 @@ class BookRepository:
         return self.manager.delete(book)
 
 
-def get_book_repository():
-    return BookRepository(engine)
+def get_books_repository():
+    return BookRepository()

@@ -1,16 +1,14 @@
-# type: ignore
-
 import pytest
 
 from app.modules.books.crud import BookRepository
 from app.modules.books.models import Book
-from tests.database.mock_config import mock_engine, mock_session
+from tests.database.mock_config import mock_session
 from tests.factories import fake_book_model
 
 
 class TestBooksRepository:
     def setup_method(self):
-        self.repository = BookRepository(mock_engine)
+        self.repository = BookRepository(mock_session)
         with mock_session() as session:
             session.add(fake_book_model())
             session.add(fake_book_model())

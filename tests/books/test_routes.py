@@ -1,32 +1,27 @@
 import io
 from typing import Any, Mapping
-from unittest.mock import patch
-from fastapi import HTTPException
 from app.modules.authors.crud import AuthorRepository
-from app.modules.authors.schemas import AuthorCreate
 from app.modules.books.crud import BookRepository
 
-from app.modules.books.handlers import get_upload_path
+from app.modules.books.routes import get_upload_path
 
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.database.config import engine
-from app.modules.books.schemas import BookCreate
+from tests.database.mock_config import mock_session
 from tests.factories import (
     fake_author_create,
-    fake_author_schema,
     fake_book_create,
     fake_book_schema,
 )
-from tempfile import TemporaryDirectory
 
 client = TestClient(app)
 
 
 class TestBooksRoutes:
-    book_repository = BookRepository(engine)
-    author_repository = AuthorRepository(engine)
+    def setup_method(self):
+        self.book_repository = BookRepository(mock_session)
+        self.author_repository = AuthorRepository(mock_session)
 
     def test_get_all_books(
         self,
