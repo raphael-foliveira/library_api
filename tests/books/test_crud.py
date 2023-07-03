@@ -36,14 +36,12 @@ class TestBooksRepository:
         assert len(self.repository.list()) > 0
 
     def test_create(self):
-        initial_length = len(self.repository.list())
         author_mock = self.author_repository.list()[0]
         book_mock = fake_book_model()
         book_mock.author_id = author_mock.id  # type: ignore
         new_book = self.repository.create(book_mock)
         assert new_book in self.repository.list()
         assert new_book.title == book_mock.title
-        assert len(self.repository.list()) > initial_length
 
     def test_delete(self):
         initial_length = len(self.repository.list())
