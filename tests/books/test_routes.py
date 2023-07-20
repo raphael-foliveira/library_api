@@ -8,7 +8,7 @@ from app.modules.authors.routes import get_author_repository
 from app.modules.books.crud import BookRepository
 from app.modules.books.routes import get_books_repository, get_upload_path
 from tests.authors.test_routes import override_get_author_repository
-from tests.database.mock_config import mock_sessionmaker, mock_engine
+from tests.database.db import sessionmaker_test, engine_test
 from app.modules.authors.models import *
 from app.modules.books.models import *
 from tests.factories import (
@@ -21,7 +21,7 @@ client = TestClient(app)
 
 
 def override_get_books_repository():
-    return BookRepository(mock_sessionmaker)
+    return BookRepository(sessionmaker_test)
 
 
 class TestBooksRoutes:
@@ -29,10 +29,10 @@ class TestBooksRoutes:
     def setup_class(cls):
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         app.dependency_overrides[get_books_repository] = override_get_books_repository
-        Base.metadata.create_all(mock_engine)
+        Base.metadata.create_all(engine_test)
 
     def setup_method(self):
-        with mock_sessionmaker() as session:
+        with sessionmaker_test() as session:
             author1 = fake_author_model()
             author2 = fake_author_model()
 
@@ -94,4 +94,4 @@ class TestBooksRoutes:
 
     @classmethod
     def teardown_class(cls):
-        Base.metadata.drop_all(mock_engine)
+        Base.metadata.drop_all(engine_test)

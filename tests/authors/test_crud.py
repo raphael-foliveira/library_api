@@ -2,7 +2,7 @@ import pytest
 from app.modules.authors.crud import AuthorRepository
 from app.modules.authors.models import Author
 from app.modules.authors.schemas import AuthorCreate
-from tests.database.mock_config import mock_sessionmaker, mock_engine
+from tests.database.db import sessionmaker_test, engine_test
 from app.database.config import Base
 from tests.factories import fake_author_model
 
@@ -10,11 +10,11 @@ from tests.factories import fake_author_model
 class TestAuthorsRepository:
     @classmethod
     def setup_class(cls):
-        cls.repository = AuthorRepository(mock_sessionmaker)
-        Base.metadata.create_all(mock_engine)
+        cls.repository = AuthorRepository(sessionmaker_test)
+        Base.metadata.create_all(engine_test)
 
     def setup_method(self):
-        with mock_sessionmaker() as session:
+        with sessionmaker_test() as session:
             session.add(fake_author_model())
             session.add(fake_author_model())
             session.commit()
@@ -45,10 +45,10 @@ class TestAuthorsRepository:
             self.repository.find(650)
 
     def teardown_method(self):
-        with mock_sessionmaker() as session:
+        with sessionmaker_test() as session:
             session.query(Author).delete()
             session.commit()
 
     @classmethod
     def teardown_class(cls):
-        Base.metadata.drop_all(mock_engine)
+        Base.metadata.drop_all(engine_test)

@@ -3,7 +3,7 @@ from app.modules.authors.crud import AuthorRepository
 from app.modules.books.crud import BookRepository
 
 from app.modules.books.models import Book
-from tests.database.mock_config import mock_sessionmaker, mock_engine
+from tests.database.db import sessionmaker_test, engine_test
 from app.database.config import Base
 from tests.factories import fake_author_model, fake_book_model
 
@@ -11,12 +11,12 @@ from tests.factories import fake_author_model, fake_book_model
 class TestBooksRepository:
     @classmethod
     def setup_class(cls):
-        cls.author_repository = AuthorRepository(mock_sessionmaker)
-        cls.repository = BookRepository(mock_sessionmaker)
-        Base.metadata.create_all(mock_engine)
+        cls.author_repository = AuthorRepository(sessionmaker_test)
+        cls.repository = BookRepository(sessionmaker_test)
+        Base.metadata.create_all(engine_test)
 
     def setup_method(self):
-        with mock_sessionmaker() as session:
+        with sessionmaker_test() as session:
             author1 = fake_author_model()
             author2 = fake_author_model()
 
@@ -58,10 +58,10 @@ class TestBooksRepository:
             self.repository.find(650)
 
     def teardown_method(self):
-        with mock_sessionmaker() as session:
+        with sessionmaker_test() as session:
             session.query(Book).delete()
             session.commit()
 
     @classmethod
     def teardown_class(cls):
-        Base.metadata.drop_all(mock_engine)
+        Base.metadata.drop_all(engine_test)

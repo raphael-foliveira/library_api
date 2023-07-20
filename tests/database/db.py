@@ -8,6 +8,5 @@ load_dotenv()
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL")
 assert TEST_DATABASE_URL is not None
 
-
-mock_engine = create_engine(TEST_DATABASE_URL)
-mock_sessionmaker = sessionmaker(bind=mock_engine)
+engine_test = create_engine(TEST_DATABASE_URL)
+sessionmaker_test = sessionmaker(bind=engine_test)
