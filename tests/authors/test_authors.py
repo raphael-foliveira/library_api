@@ -50,7 +50,6 @@ class TestAuthorsRoutes:
 
     def test_create_invalid_author(self):
         response = client.post("/authors", json={"foo": "John", "bar": "Doe"})
-        print(response.json())
         assert response.status_code == 422
 
     def test_delete_author(self):
