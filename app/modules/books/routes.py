@@ -1,10 +1,10 @@
 from datetime import date
 import os
 from fastapi import APIRouter, Depends, Form, HTTPException, Response, UploadFile
-from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from app.modules.books import schemas
-from app.modules.books.crud import BookRepository
+from app.modules.books.repository import BookRepository
 from app.database.config import session
 
 
@@ -77,4 +77,5 @@ def delete_book(
         repository.delete(book_id)
         return Response(status_code=204)
     except Exception as e:
+        print(e.args[0])
         raise HTTPException(status_code=404, detail=e.args[0])

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
-from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.schemas import AuthorCreate
 from app.database.config import session
 

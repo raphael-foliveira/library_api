@@ -5,7 +5,7 @@ from copy import copy
 
 from app.main import app
 from app.modules.authors.routes import get_author_repository
-from app.modules.books.crud import BookRepository
+from app.modules.books.repository import BookRepository
 from app.modules.books.routes import get_books_repository, get_upload_path
 from tests.authors.test_authors import override_get_author_repository
 from tests.database.db import sessionmaker_test, engine_test

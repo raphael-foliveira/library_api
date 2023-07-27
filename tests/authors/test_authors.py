@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.modules.authors.crud import AuthorRepository
+from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from tests.database.db import sessionmaker_test, engine_test
 from app.database.config import Base
