@@ -49,6 +49,8 @@ class TestAuthorsRoutes:
     def test_get_all_authors(self):
         response = client.get("/authors")
         assert response.status_code == 200
+        assert isinstance(response.json(), list)
+        assert len(response.json()) == len(self.author_ids)
 
     def test_find_author(self):
         for author_id in self.author_ids:

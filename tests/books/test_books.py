@@ -49,7 +49,7 @@ class TestBooksRoutes:
                 book = fake_book_model()
                 book.author_id = author.id  # type: ignore
                 self.book_ids.append(book.id)
-            session.commit()
+                session.commit()
             self.book_ids = [book.id for book in session.query(Book).all()]
             print(self.book_ids)
 
@@ -64,6 +64,7 @@ class TestBooksRoutes:
         response = client.get("/books/")
         assert response.status_code == 200
         assert isinstance(response.json(), list)
+        assert len(response.json()) == len(self.book_ids)
 
     def test_find_book(self):
         for book_id in self.book_ids:
