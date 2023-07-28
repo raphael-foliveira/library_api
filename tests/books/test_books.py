@@ -48,8 +48,6 @@ class TestBooksRoutes:
             session.add(author2)
             session.add(book1)
             session.add(book2)
-            self.author1 = copy(author1)
-            self.book1 = copy(book1)
             session.commit()
 
     def test_get_all_books(self):
@@ -58,7 +56,7 @@ class TestBooksRoutes:
         assert isinstance(response.json(), list)
 
     def test_find_book(self):
-        response = client.get(f"/books/{self.book1.id}")
+        response = client.get(f"/books/1")
         assert response.status_code == 200
 
     def test_find_non_existing_book(self):
@@ -67,7 +65,7 @@ class TestBooksRoutes:
 
     def test_create_book(self):
         mock_book = fake_book_schema()
-        mock_book.author_id = self.author1.id  # type: ignore
+        mock_book.author_id = 1 # type: ignore
         form_data: Mapping[str, Any] = {
             "title": mock_book.title,
             "release_date": mock_book.release_date.strftime("%Y-%m-%d"),
@@ -83,7 +81,7 @@ class TestBooksRoutes:
         assert response.status_code == 201
 
     def test_delete_book(self):
-        response = client.delete(f"/books/{self.book1.id}")
+        response = client.delete(f"/books/2")
         assert response.status_code == 204
 
     def test_delete_non_existing_book(self):

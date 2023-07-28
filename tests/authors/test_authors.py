@@ -30,11 +30,9 @@ class TestAuthorsRoutes:
         with sessionmaker_test() as session:
             author1 = fake_author_model()
             author2 = fake_author_model()
-            self.author1 = copy(author1)
-            self.author2 = copy(author2)
 
-            session.add(self.author1)
-            session.add(self.author2)
+            session.add(author1)
+            session.add(author2)
             session.commit()
 
     def test_get_all_authors(self):
@@ -42,7 +40,7 @@ class TestAuthorsRoutes:
         assert response.status_code == 200
 
     def test_find_author(self):
-        response = client.get(f"/authors/{self.author1.id}")
+        response = client.get(f"/authors/1")
         assert response.status_code == 200
 
     def test_create_author(self):
@@ -56,7 +54,7 @@ class TestAuthorsRoutes:
         assert response.status_code == 422
 
     def test_delete_author(self):
-        response = client.delete(f"/authors/{self.author2.id}")
+        response = client.delete(f"/authors/2")
         assert response.status_code == 204
 
     def test_delete_non_existing_author(self):
