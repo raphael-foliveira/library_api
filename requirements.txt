@@ -4,5 +4,7 @@ sqlalchemy
 python-dotenv
 black
 pytest
+pytest-watch
 alembic
 faker
+poetry
