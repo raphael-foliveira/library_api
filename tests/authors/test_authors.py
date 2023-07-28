@@ -1,5 +1,7 @@
+from typing import Generator
 from fastapi import Depends
 from fastapi.testclient import TestClient
+import pytest
 from sqlalchemy.orm.session import Session
 
 from app.database.config import Base
@@ -17,12 +19,16 @@ def override_get_author_repository(db: Session = Depends(get_test_db)):
     return AuthorRepository(db)
 
 
-def insert_authors_to_test_database() -> list[int]:
+@pytest.fixture
+def database_author_ids() -> Generator[list[int], None, None]:
     with sessionmaker_test() as session:
         authors = [fake_author_model() for _ in range(5)]
         session.add_all(authors)
         session.commit()
-        return [author.id for author in session.query(Author).all()]
+        yield [author.id for author in session.query(Author).all()]
+        for author in session.query(Author).all():
+            session.delete(author)
+        session.commit()
 
 
 class TestAuthorsRoutes:
@@ -31,35 +37,25 @@ class TestAuthorsRoutes:
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         cls.repository = override_get_author_repository()
         Base.metadata.create_all(engine_test)
-        cls.author_ids = []
 
     @classmethod
     def teardown_class(cls):
         Base.metadata.drop_all(engine_test)
 
-    def setup_method(self):
-        self.author_ids = insert_authors_to_test_database()
-
-    def teardown_method(self):
-        with sessionmaker_test() as session:
-            for author in session.query(Author).all():
-                session.delete(author)
-            session.commit()
-
-    def test_get_all_authors(self):
+    def test_get_all_authors(self, database_author_ids):
         response = client.get("/authors")
         assert response.status_code == 200
         assert isinstance(response.json(), list)
-        assert len(response.json()) == len(self.author_ids)
+        assert len(response.json()) == len(database_author_ids)
 
-    def test_find_author(self):
-        for author_id in self.author_ids:
+    def test_find_author(self, database_author_ids):
+        for author_id in database_author_ids:
             response = client.get(f"/authors/{author_id}")
             assert response.status_code == 200
 
-    def test_find_non_existing_author(self):
+    def test_find_non_existing_author(self, database_author_ids):
         non_existing_author_id = 650
-        while non_existing_author_id in self.author_ids:
+        while non_existing_author_id in database_author_ids:
             non_existing_author_id += 1
         response = client.get(f"/authors/{non_existing_author_id}")
         assert response.status_code == 404
@@ -74,14 +70,14 @@ class TestAuthorsRoutes:
         response = client.post("/authors", json={"foo": "John", "bar": "Doe"})
         assert response.status_code == 422
 
-    def test_delete_author(self):
-        for author_id in self.author_ids:
+    def test_delete_author(self, database_author_ids):
+        for author_id in database_author_ids:
             response = client.delete(f"/authors/{author_id}")
             assert response.status_code == 204
 
-    def test_delete_non_existing_author(self):
+    def test_delete_non_existing_author(self, database_author_ids):
         non_existing_author_id = 650
-        while non_existing_author_id in self.author_ids:
+        while non_existing_author_id in database_author_ids:
             non_existing_author_id += 1
         response = client.get(f"/authors/{non_existing_author_id}")
         assert response.status_code == 404
