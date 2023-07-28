@@ -18,7 +18,7 @@ def fake_author_model(include_id: bool = False):
 def fake_book_model(include_id: bool = False):
     if include_id:
         return Book(
-            id = fake.random_int(),
+            id=fake.random_int(),
             title=fake.name(),
             author_id=fake.random_int(min=1, max=9999),
             release_date=date.today(),

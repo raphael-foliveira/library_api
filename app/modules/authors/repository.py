@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.interfaces.repository import Repository
 
@@ -12,7 +13,7 @@ class AuthorRepository(Repository):
         if (
             author := self.session.query(models.Author).filter_by(id=id).first()
         ) is None:
-            raise Exception("Author not found")
+            raise HTTPException(status_code=404, detail="Author not found")
         return author
 
     def list(self) -> list[schemas.Author]:
@@ -28,11 +29,10 @@ class AuthorRepository(Repository):
         self.session.flush()
         return author_model
 
-    def delete(self, author_id: int) -> bool:
+    def delete(self, author_id: int) -> None:
         if (
             author := self.session.query(models.Author).filter_by(id=author_id).first()
         ) is None:
-            raise Exception("Author not found")
+            raise HTTPException(status_code=404, detail="Author not found")
         self.session.delete(author)
         self.session.commit()
-        return True

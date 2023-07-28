@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -9,7 +10,7 @@ class BookRepository:
 
     def find(self, id: int) -> schemas.Book:
         if (book := self.session.query(models.Book).filter_by(id=id).first()) is None:
-            raise Exception("Book not found")
+            raise HTTPException(status_code=404, detail="Book not found")
         return book
 
     def list(self) -> list[schemas.Book]:
@@ -33,7 +34,7 @@ class BookRepository:
         if (
             book := self.session.query(models.Book).filter_by(id=book_id).first()
         ) is None:
-            raise Exception("Book not found")
+            raise HTTPException(status_code=404, detail="Book not found")
         self.session.delete(book)
         self.session.commit()
         return True

@@ -42,6 +42,10 @@ class TestAuthorsRoutes:
         response = client.get(f"/authors/1")
         assert response.status_code == 200
 
+    def test_find_non_existing_author(self):
+        response = client.get(f"/authors/650")
+        assert response.status_code == 404
+
     def test_create_author(self):
         response = client.post(
             "/authors", json={"first_name": "John", "last_name": "Doe"}

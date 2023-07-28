@@ -79,6 +79,14 @@ class TestBooksRoutes:
         )
         assert response.status_code == 201
 
+    def test_create_invalid_book(self):
+        form_data: Mapping[str, Any] = {"foo": "bar", "spam": "eggs"}
+        response = client.post(
+            "/books/",
+            data=form_data,
+        )
+        assert response.status_code == 422
+
     def test_delete_book(self):
         response = client.delete(f"/books/2")
         assert response.status_code == 204
