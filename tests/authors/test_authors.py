@@ -21,16 +21,17 @@ class TestAuthorsRoutes:
     def setup_class(cls):
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         cls.repository = override_get_author_repository()
-        Base.metadata.create_all(engine_test)
 
     def setup_method(self):
+        print("setting up")
+        Base.metadata.create_all(engine_test)
         with sessionmaker_test() as session:
-            author1 = fake_author_model()
-            author2 = fake_author_model()
-
-            session.add(author1)
-            session.add(author2)
+            session.add_all([fake_author_model() for _ in range(15)])
             session.commit()
+
+    def teardown_method(self):
+        print("tearing down")
+        Base.metadata.drop_all(engine_test)
 
     def test_get_all_authors(self):
         response = client.get("/authors")
