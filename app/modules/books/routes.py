@@ -5,7 +5,8 @@ from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from app.modules.books import schemas
 from app.modules.books.repository import BookRepository
-from app.database.config import session
+from app.database.config import get_db, session
+from sqlalchemy.orm.session import Session
 
 
 books_router = APIRouter(prefix="/books", tags=["books"])
@@ -15,8 +16,12 @@ def get_upload_path(authorId: str):
     return f"./uploads/{authorId}"
 
 
-def get_books_repository():
-    return BookRepository(session)
+# def get_books_repository():
+#     with session() as db:
+#         return BookRepository(db)
+
+def get_books_repository(db: Session = Depends(get_db)):
+    return BookRepository(db)
 
 
 @books_router.get("/")

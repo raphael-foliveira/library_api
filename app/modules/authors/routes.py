@@ -1,13 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.schemas import AuthorCreate
-from app.database.config import session
+from app.database.config import get_db, session
+from sqlalchemy.orm.session import Session
 
 authors_router = APIRouter(prefix="/authors", tags=["authors"])
 
 
-def get_author_repository():
-    return AuthorRepository(session)
+# def get_author_repository():
+#     with session() as db:
+#         return AuthorRepository(db)
+
+def get_author_repository(db: Session = Depends(get_db)):
+    return AuthorRepository(db)
 
 
 @authors_router.get("/")

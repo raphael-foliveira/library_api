@@ -11,3 +11,11 @@ assert DATABASE_URL is not None
 engine = create_engine(DATABASE_URL)
 session = sessionmaker(bind=engine)
 Base = declarative_base()
+
+
+def get_db():
+    db = session()
+    try:
+        yield db
+    finally:
+        db.close()
