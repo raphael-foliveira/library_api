@@ -44,7 +44,7 @@ class TestBooksRoutes:
                 session.add(author)
                 session.commit()
                 book = fake_book_model()
-                book.author_id = author.id  # type: ignore
+                book.author_id = author.id
                 self.book_ids.append(book.id)
                 session.commit()
             self.book_ids = [book.id for book in session.query(Book).all()]
@@ -76,7 +76,7 @@ class TestBooksRoutes:
 
     def test_create_book(self):
         mock_book = fake_book_schema()
-        mock_book.author_id = 1  # type: ignore
+        mock_book.author_id = 1
         form_data: Mapping[str, Any] = {
             "title": mock_book.title,
             "release_date": mock_book.release_date.strftime("%Y-%m-%d"),
