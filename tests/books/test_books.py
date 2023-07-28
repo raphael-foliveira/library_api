@@ -30,17 +30,14 @@ class TestBooksRoutes:
     def setup_class(cls):
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         app.dependency_overrides[get_books_repository] = override_get_books_repository
-        print("creating tables")
         Base.metadata.create_all(engine_test)
         cls.book_ids = []
 
     @classmethod
     def teardown_class(cls):
-        print("deleting tables")
         Base.metadata.drop_all(engine_test)
 
     def setup_method(self):
-        print("setting up")
         with sessionmaker_test() as session:
             for _ in range(5):
                 author = fake_author_model()
@@ -58,7 +55,6 @@ class TestBooksRoutes:
             for book in session.query(Book).all():
                 session.delete(book)
             session.commit()
-        print("tearing down")
 
     def test_get_all_books(self):
         response = client.get("/books/")
