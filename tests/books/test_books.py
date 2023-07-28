@@ -25,6 +25,18 @@ def override_get_books_repository(db: Session = Depends(get_test_db)):
     return BookRepository(db)
 
 
+def insert_books_to_database() -> list[int]:
+    with sessionmaker_test() as session:
+        for _ in range(5):
+            author = fake_author_model()
+            session.add(author)
+            session.commit()
+            book = fake_book_model()
+            book.author_id = author.id
+            session.commit()
+        return [book.id for book in session.query(Book).all()]
+
+
 class TestBooksRoutes:
     @classmethod
     def setup_class(cls):
@@ -38,17 +50,7 @@ class TestBooksRoutes:
         Base.metadata.drop_all(engine_test)
 
     def setup_method(self):
-        with sessionmaker_test() as session:
-            for _ in range(5):
-                author = fake_author_model()
-                session.add(author)
-                session.commit()
-                book = fake_book_model()
-                book.author_id = author.id
-                self.book_ids.append(book.id)
-                session.commit()
-            self.book_ids = [book.id for book in session.query(Book).all()]
-            print(self.book_ids)
+        self.book_ids = insert_books_to_database()
 
     def teardown_method(self):
         with sessionmaker_test() as session:

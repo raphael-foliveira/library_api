@@ -17,6 +17,14 @@ def override_get_author_repository(db: Session = Depends(get_test_db)):
     return AuthorRepository(db)
 
 
+def insert_authors_to_test_database() -> list[int]:
+    with sessionmaker_test() as session:
+        authors = [fake_author_model() for _ in range(5)]
+        session.add_all(authors)
+        session.commit()
+        return [author.id for author in session.query(Author).all()]
+
+
 class TestAuthorsRoutes:
     @classmethod
     def setup_class(cls):
@@ -30,11 +38,7 @@ class TestAuthorsRoutes:
         Base.metadata.drop_all(engine_test)
 
     def setup_method(self):
-        with sessionmaker_test() as session:
-            authors = [fake_author_model() for _ in range(5)]
-            session.add_all(authors)
-            session.commit()
-            self.author_ids = [author.id for author in session.query(Author).all()]
+        self.author_ids = insert_authors_to_test_database()
 
     def teardown_method(self):
         with sessionmaker_test() as session:
