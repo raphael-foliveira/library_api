@@ -30,23 +30,35 @@ class TestBooksRoutes:
     def setup_class(cls):
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         app.dependency_overrides[get_books_repository] = override_get_books_repository
+        print("creating tables")
+        Base.metadata.create_all(engine_test)
+        cls.book_ids = []
+
+    @classmethod
+    def teardown_class(cls):
+        print("deleting tables")
+        Base.metadata.drop_all(engine_test)
 
     def setup_method(self):
         print("setting up")
-        Base.metadata.create_all(engine_test)
         with sessionmaker_test() as session:
-            for _ in range(15):
+            for _ in range(5):
                 author = fake_author_model()
                 session.add(author)
                 session.commit()
                 book = fake_book_model()
                 book.author_id = author.id  # type: ignore
-                session.add(book)
+                self.book_ids.append(book.id)
             session.commit()
+            self.book_ids = [book.id for book in session.query(Book).all()]
+            print(self.book_ids)
 
     def teardown_method(self):
+        with sessionmaker_test() as session:
+            for book in session.query(Book).all():
+                session.delete(book)
+            session.commit()
         print("tearing down")
-        Base.metadata.drop_all(engine_test)
 
     def test_get_all_books(self):
         response = client.get("/books/")
@@ -54,11 +66,15 @@ class TestBooksRoutes:
         assert isinstance(response.json(), list)
 
     def test_find_book(self):
-        response = client.get(f"/books/1")
-        assert response.status_code == 200
+        for book_id in self.book_ids:
+            response = client.get(f"/books/{book_id}")
+            assert response.status_code == 200
 
     def test_find_non_existing_book(self):
-        response = client.get(f"/books/650")
+        non_existing_book_id = 650
+        while non_existing_book_id in self.book_ids:
+            non_existing_book_id += 1
+        response = client.get(f"/books/{non_existing_book_id}")
         assert response.status_code == 404
 
     def test_create_book(self):
@@ -87,17 +103,17 @@ class TestBooksRoutes:
         assert response.status_code == 422
 
     def test_delete_book(self):
-        response = client.delete(f"/books/2")
-        assert response.status_code == 204
+        for book_id in self.book_ids:
+            response = client.delete(f"/books/{book_id}")
+            assert response.status_code == 204
 
     def test_delete_non_existing_book(self):
-        response = client.delete(f"/books/650")
+        non_existing_book_id = 650
+        while non_existing_book_id in self.book_ids:
+            non_existing_book_id += 1
+        response = client.delete(f"/books/{non_existing_book_id}")
         assert response.status_code == 404
 
     def test_get_upload_path(self):
         upload_path = get_upload_path("1")
         assert upload_path == "./uploads/1"
-
-    @classmethod
-    def teardown_class(cls):
-        Base.metadata.drop_all(engine_test)

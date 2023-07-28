@@ -4,6 +4,7 @@ from sqlalchemy.orm.session import Session
 
 from app.database.config import Base
 from app.main import app
+from app.modules.authors.models import Author
 from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from tests.database.db import engine_test, get_test_db, sessionmaker_test
@@ -21,28 +22,44 @@ class TestAuthorsRoutes:
     def setup_class(cls):
         app.dependency_overrides[get_author_repository] = override_get_author_repository
         cls.repository = override_get_author_repository()
+        print("creating tables")
+        Base.metadata.create_all(engine_test)
+        cls.author_ids = []
+
+    @classmethod
+    def teardown_class(cls):
+        print("deleting tables")
+        Base.metadata.drop_all(engine_test)
 
     def setup_method(self):
         print("setting up")
-        Base.metadata.create_all(engine_test)
         with sessionmaker_test() as session:
-            session.add_all([fake_author_model() for _ in range(15)])
+            authors = [fake_author_model() for _ in range(5)]
+            session.add_all(authors)
             session.commit()
+            self.author_ids = [author.id for author in session.query(Author).all()]
 
     def teardown_method(self):
         print("tearing down")
-        Base.metadata.drop_all(engine_test)
+        with sessionmaker_test() as session:
+            for author in session.query(Author).all():
+                session.delete(author)
+            session.commit()
 
     def test_get_all_authors(self):
         response = client.get("/authors")
         assert response.status_code == 200
 
     def test_find_author(self):
-        response = client.get(f"/authors/1")
-        assert response.status_code == 200
+        for author_id in self.author_ids:
+            response = client.get(f"/authors/{author_id}")
+            assert response.status_code == 200
 
     def test_find_non_existing_author(self):
-        response = client.get(f"/authors/650")
+        non_existing_author_id = 650
+        while non_existing_author_id in self.author_ids:
+            non_existing_author_id += 1
+        response = client.get(f"/authors/{non_existing_author_id}")
         assert response.status_code == 404
 
     def test_create_author(self):
@@ -56,13 +73,13 @@ class TestAuthorsRoutes:
         assert response.status_code == 422
 
     def test_delete_author(self):
-        response = client.delete(f"/authors/2")
-        assert response.status_code == 204
+        for author_id in self.author_ids:
+            response = client.delete(f"/authors/{author_id}")
+            assert response.status_code == 204
 
     def test_delete_non_existing_author(self):
-        response = client.get(f"/authors/650")
+        non_existing_author_id = 650
+        while non_existing_author_id in self.author_ids:
+            non_existing_author_id += 1
+        response = client.get(f"/authors/{non_existing_author_id}")
         assert response.status_code == 404
-
-    @classmethod
-    def teardown_class(cls):
-        Base.metadata.drop_all(engine_test)
