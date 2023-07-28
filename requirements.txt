@@ -8,3 +8,4 @@ pytest-watch
 alembic
 faker
 poetry
+autoflake
