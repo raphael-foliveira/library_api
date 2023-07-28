@@ -1,4 +1,3 @@
-from copy import copy
 from fastapi import Depends
 from fastapi.testclient import TestClient
 
@@ -9,7 +8,7 @@ from tests.database.db import get_test_db, sessionmaker_test, engine_test
 from app.database.config import Base
 from app.modules.authors.models import *
 from app.modules.books.models import *
-from tests.factories import fake_author_create, fake_author_model
+from tests.factories import fake_author_model
 from sqlalchemy.orm.session import Session
 
 client = TestClient(app)

@@ -2,7 +2,6 @@ import io
 from typing import Mapping
 from fastapi import Depends
 from fastapi.testclient import TestClient
-from copy import copy
 
 from app.main import app
 from app.modules.authors.routes import get_author_repository
@@ -65,7 +64,7 @@ class TestBooksRoutes:
 
     def test_create_book(self):
         mock_book = fake_book_schema()
-        mock_book.author_id = 1 # type: ignore
+        mock_book.author_id = 1  # type: ignore
         form_data: Mapping[str, Any] = {
             "title": mock_book.title,
             "release_date": mock_book.release_date.strftime("%Y-%m-%d"),

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 
 from . import models, schemas
 
@@ -13,7 +13,7 @@ class BookRepository:
         return book
 
     def list(self) -> list[schemas.Book]:
-            return self.session.query(models.Book).all()
+        return self.session.query(models.Book).all()
 
     def create(self, book: schemas.BookCreate):
         new_book = models.Book(
@@ -27,12 +27,13 @@ class BookRepository:
         self.session.commit()
         self.session.refresh(new_book)
         self.session.flush()
-        return new_book 
+        return new_book
 
     def delete(self, book_id: int) -> bool:
-        if (book := self.session.query(models.Book).filter_by(id=book_id).first()) is None:
+        if (
+            book := self.session.query(models.Book).filter_by(id=book_id).first()
+        ) is None:
             raise Exception("Book not found")
         self.session.delete(book)
         self.session.commit()
         return True
-
