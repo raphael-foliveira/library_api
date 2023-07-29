@@ -5,8 +5,8 @@ from . import models, schemas
 
 
 class BookRepository:
-    def __init__(self, sessionmaker: Session):
-        self.session = sessionmaker
+    def __init__(self, session: Session):
+        self.session = session
 
     def find(self, id: int) -> schemas.Book:
         if (book := self.session.query(models.Book).filter_by(id=id).first()) is None:
