@@ -17,8 +17,12 @@ alembic = "^1.11.1"
 faker = "^18.9.0"
 pytest-cov = "^4.1.0"
 pytest-watch = "^4.2.0"
+autoflake = "^2.2.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.autoflake]
+imports = ["*"]

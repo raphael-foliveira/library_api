@@ -7,13 +7,25 @@ from datetime import date
 fake = Faker()
 
 
-def fake_author_model():
-    return Author(id=fake.random_int(), first_name=fake.name(), last_name=fake.name())
+def fake_author_model(include_id: bool = False):
+    if include_id:
+        return Author(
+            id=fake.random_int(), first_name=fake.name(), last_name=fake.name()
+        )
+    return Author(first_name=fake.name(), last_name=fake.name())
 
 
-def fake_book_model():
+def fake_book_model(include_id: bool = False):
+    if include_id:
+        return Book(
+            id=fake.random_int(),
+            title=fake.name(),
+            author_id=fake.random_int(min=1, max=9999),
+            release_date=date.today(),
+            number_of_pages=fake.random_int(min=100, max=1000),
+            image_url=fake.url(),
+        )
     return Book(
-        id=fake.random_int(min=1, max=9999),
         title=fake.name(),
         author_id=fake.random_int(min=1, max=9999),
         release_date=date.today(),
