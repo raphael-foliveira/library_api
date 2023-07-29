@@ -22,8 +22,6 @@ def override_get_author_repository(db: Session = Depends(get_test_db)):
 
 @pytest.fixture
 def database_author_ids() -> Generator[list[int], None, None]:
-    with engine_test.connect() as conn:
-        conn.execute(text("SET search_path TO test;"))
     with sessionmaker_test() as session:
         authors = [fake_author_model() for _ in range(5)]
         session.add_all(authors)

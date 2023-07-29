@@ -30,9 +30,6 @@ def override_get_books_repository(db: Session = Depends(get_test_db)):
 
 @pytest.fixture
 def database_book_ids() -> Generator[list[int], None, None]:
-    with engine_test.connect() as conn:
-        conn.execute(text("SET search_path TO test;"))
-
     with sessionmaker_test() as session:
         for _ in range(5):
             author = fake_author_model()
