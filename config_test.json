@@ -1,0 +1,3 @@
+{
+    "test_database": "postgresql://postgres:postgres@localhost:5432/postgres"
+}
