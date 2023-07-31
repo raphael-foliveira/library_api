@@ -11,7 +11,6 @@ from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from tests.database.db import engine_test, get_test_db, sessionmaker_test
 from tests.factories import fake_author_model
-from sqlalchemy import text
 
 client = TestClient(app)
 
