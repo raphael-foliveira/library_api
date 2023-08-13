@@ -9,17 +9,17 @@ class AuthorRepository(Repository):
     def __init__(self, session: Session):
         self.session = session
 
-    def find(self, id: int) -> schemas.Author:
+    def find(self, id: int):
         if (
             author := self.session.query(models.Author).filter_by(id=id).first()
         ) is None:
             raise HTTPException(status_code=404, detail="Author not found")
         return author
 
-    def list(self) -> list[schemas.Author]:
+    def list(self):
         return self.session.query(models.Author).all()
 
-    def create(self, author: schemas.AuthorCreate) -> schemas.Author:
+    def create(self, author: schemas.AuthorCreate):
         author_model = models.Author(
             first_name=author.first_name, last_name=author.last_name
         )
