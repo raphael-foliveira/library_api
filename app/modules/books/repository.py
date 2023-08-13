@@ -8,12 +8,12 @@ class BookRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def find(self, id: int) -> schemas.Book:
+    def find(self, id: int) -> models.Book:
         if (book := self.session.query(models.Book).filter_by(id=id).first()) is None:
             raise HTTPException(status_code=404, detail="Book not found")
         return book
 
-    def list(self) -> list[schemas.Book]:
+    def list(self) -> list[models.Book]:
         return self.session.query(models.Book).all()
 
     def create(self, book: schemas.BookCreate):

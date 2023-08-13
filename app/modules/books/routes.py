@@ -1,7 +1,7 @@
 import os
 from datetime import date
 
-from fastapi import APIRouter, Depends, Form, Response, UploadFile
+from fastapi import APIRouter, Depends, Form, UploadFile
 from sqlalchemy.orm.session import Session
 
 from app.database.config import get_db
@@ -21,19 +21,19 @@ def get_books_repository(db: Session = Depends(get_db)):
     return BookRepository(db)
 
 
-@books_router.get("/")
+@books_router.get("/", response_model=list[schemas.Book])
 def list_books(repository: BookRepository = Depends(get_books_repository)):
     return repository.list()
 
 
-@books_router.get("/{book_id}/")
+@books_router.get("/{book_id}/", response_model=schemas.Book)
 def retrieve_book(
     book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
     return repository.find(book_id)
 
 
-@books_router.post("/", status_code=201)
+@books_router.post("/", status_code=201, response_model=schemas.Book)
 async def create_book(
     image: UploadFile | None = None,
     title: str = Form(),
@@ -42,7 +42,7 @@ async def create_book(
     author_id: str = Form(),
     author_repository: AuthorRepository = Depends(get_author_repository),
     repository: BookRepository = Depends(get_books_repository),
-) -> schemas.Book:
+):
     author_repository.find(int(author_id))
 
     release_date_split = [int(d) for d in release_date.split("-")]
@@ -65,9 +65,8 @@ async def create_book(
     return repository.create(new_book)
 
 
-@books_router.delete("/{book_id}/")
+@books_router.delete("/{book_id}/", status_code=204)
 def delete_book(
     book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
-    repository.delete(book_id)
-    return Response(status_code=204)
+    return repository.delete(book_id)
