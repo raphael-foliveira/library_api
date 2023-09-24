@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.interfaces.repository import Repository
@@ -10,14 +11,15 @@ class AuthorRepository(Repository):
         self.session = session
 
     def find(self, id: int):
-        if (
-            author := self.session.query(models.Author).filter_by(id=id).first()
-        ) is None:
+        author = self.session.scalars(
+            select(models.Author).where(models.Author.id == id)
+        ).first()
+        if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
         return author
 
     def list(self):
-        return self.session.query(models.Author).all()
+        return self.session.scalars(select(models.Author)).all()
 
     def create(self, author: schemas.AuthorCreate):
         author_model = models.Author(
@@ -30,9 +32,10 @@ class AuthorRepository(Repository):
         return author_model
 
     def delete(self, author_id: int) -> None:
-        if (
-            author := self.session.query(models.Author).filter_by(id=author_id).first()
-        ) is None:
+        author = self.session.scalars(
+            select(models.Author).where(models.Author.id == author_id)
+        ).first()
+        if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
         self.session.delete(author)
         self.session.commit()

@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -9,12 +10,15 @@ class BookRepository:
         self.session = session
 
     def find(self, id: int) -> models.Book:
-        if (book := self.session.query(models.Book).filter_by(id=id).first()) is None:
+        book = self.session.scalars(
+            select(models.Book).where(models.Book.id == id)
+        ).first()
+        if book is None:
             raise HTTPException(status_code=404, detail="Book not found")
         return book
 
-    def list(self) -> list[models.Book]:
-        return self.session.query(models.Book).all()
+    def list(self):
+        return self.session.scalars(select(models.Book)).all()
 
     def create(self, book: schemas.BookCreate):
         new_book = models.Book(
@@ -31,9 +35,10 @@ class BookRepository:
         return new_book
 
     def delete(self, book_id: int) -> bool:
-        if (
-            book := self.session.query(models.Book).filter_by(id=book_id).first()
-        ) is None:
+        book = self.session.scalars(
+            select(models.Book).where(models.Book.id == book_id)
+        ).first()
+        if book is None:
             raise HTTPException(status_code=404, detail="Book not found")
         self.session.delete(book)
         self.session.commit()
