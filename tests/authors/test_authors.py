@@ -22,10 +22,10 @@ def override_get_author_repository(db: Session = Depends(get_test_db)):
 @pytest.fixture
 def database_author_ids() -> Generator[list[int], None, None]:
     with sessionmaker_test() as session:
-        authors = [fake_author_model() for _ in range(5)]
+        authors = [fake_author_model() for _ in range(0, 5)]
         session.add_all(authors)
         session.commit()
-        yield [author.id for author in session.query(Author).all()]
+        yield [int(author.id) for author in session.query(Author).all()]
         for author in session.query(Author).all():
             session.delete(author)
         session.commit()
