@@ -6,7 +6,7 @@ from sqlalchemy.orm.session import Session
 
 from app.database.config import Base
 from app.main import app
-from app.modules.authors.models import Author
+from app.modules.authors.models import AuthorModel
 from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from tests.database.db import engine_test, get_test_db, sessionmaker_test
@@ -25,8 +25,8 @@ def database_author_ids() -> Generator[list[int], None, None]:
         authors = [fake_author_model() for _ in range(0, 5)]
         session.add_all(authors)
         session.commit()
-        yield [int(author.id) for author in session.query(Author).all()]
-        for author in session.query(Author).all():
+        yield [int(author.id) for author in session.query(AuthorModel).all()]
+        for author in session.query(AuthorModel).all():
             session.delete(author)
         session.commit()
 
