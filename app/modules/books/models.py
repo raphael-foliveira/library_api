@@ -1,18 +1,18 @@
 from typing import Any
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Date, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship, mapped_column
 from app.database.config import Base
 
 
 class Book(Base):
     __tablename__ = "books"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    release_date = Column(Date)
-    number_of_pages = Column(Integer)
-    author_id = Column(Integer, ForeignKey("authors.id"))
-    image_url = Column(String, nullable=True)
+    id = mapped_column(Integer, primary_key=True, index=True)
+    title = mapped_column(String)
+    release_date = mapped_column(Date)
+    number_of_pages = mapped_column(Integer)
+    author_id = mapped_column(Integer, ForeignKey("authors.id"))
+    image_url = mapped_column(String, nullable=True)
 
     author = relationship(
         "Author", back_populates="books", lazy="joined", cascade="all, delete"
