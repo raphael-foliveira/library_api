@@ -10,7 +10,7 @@ from app.modules.books.repository import BookRepository
 from app.modules.books.routes import get_books_repository, get_upload_path
 from tests.authors.test_authors import override_get_author_repository
 from tests.database.db import get_test_db, sessionmaker_test, engine_test
-from app.modules.books.models import Book
+from app.modules.books.models import BookModel
 from app.database.config import Base
 from tests.factories import (
     fake_author_model,
@@ -38,8 +38,8 @@ def database_book_ids() -> Generator[list[int], None, None]:
             book = fake_book_model()
             book.author_id = author.id
             session.commit()
-        yield [book.id for book in session.query(Book).all()]
-        for book in session.query(Book).all():
+        yield [book.id for book in session.query(BookModel).all()]
+        for book in session.query(BookModel).all():
             session.delete(book)
         session.commit()
 

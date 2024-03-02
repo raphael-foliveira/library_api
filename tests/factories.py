@@ -1,6 +1,6 @@
 from faker import Faker
-from app.modules.authors.models import Author
-from app.modules.books.models import Book
+from app.modules.authors.models import AuthorModel
+from app.modules.books.models import BookModel
 from app.modules.authors import schemas
 from datetime import date
 
@@ -9,15 +9,15 @@ fake = Faker()
 
 def fake_author_model(include_id: bool = False):
     if include_id:
-        return Author(
+        return AuthorModel(
             id=fake.random_int(), first_name=fake.name(), last_name=fake.name()
         )
-    return Author(first_name=fake.name(), last_name=fake.name())
+    return AuthorModel(first_name=fake.name(), last_name=fake.name())
 
 
 def fake_book_model(include_id: bool = False):
     if include_id:
-        return Book(
+        return BookModel(
             id=fake.random_int(),
             title=fake.name(),
             author_id=fake.random_int(min=1, max=9999),
@@ -25,7 +25,7 @@ def fake_book_model(include_id: bool = False):
             number_of_pages=fake.random_int(min=100, max=1000),
             image_url=fake.url(),
         )
-    return Book(
+    return BookModel(
         title=fake.name(),
         author_id=fake.random_int(min=1, max=9999),
         release_date=date.today(),
@@ -56,7 +56,7 @@ def fake_author_create():
 
 
 def fake_book_create():
-    return Book(
+    return BookModel(
         title=fake.name(),
         author_id=fake.random_int(min=1, max=9999),
         release_date=f"{fake.random_int(min=1900, max=2023)}-{fake.random_int(min=1, max=12)}-{fake.random_int(min=1, max=28)}",
