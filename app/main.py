@@ -7,7 +7,8 @@ from app.modules.books.routes import books_router
 
 
 Base.metadata.create_all(bind=engine)
-app = FastAPI(responses={404: {"error": "not found"}})
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

@@ -14,15 +14,15 @@ class BookRepository:
         self.session = session
 
     def find(self, id: int) -> Book:
-        book: Optional[BookModel] = self.session.scalars(
-            select(BookModel).where(BookModel.id == id)
-        ).first()
+        statement = select(BookModel).where(BookModel.id == id)
+        book: Optional[BookModel] = self.session.scalars(statement).first()
         if book is None:
             raise HTTPException(status_code=404, detail="Book not found")
         return book.to_entity()
 
     def list(self):
-        books = self.session.scalars(select(BookModel)).all()
+        statement = select(BookModel)
+        books = self.session.scalars(statement).all()
         return [book.to_entity() for book in books]
 
     def create(self, book: schemas.BookCreate):
@@ -40,9 +40,8 @@ class BookRepository:
         return new_book.to_entity()
 
     def delete(self, book_id: int) -> bool:
-        book = self.session.scalars(
-            select(BookModel).where(BookModel.id == book_id)
-        ).first()
+        statement = select(BookModel).where(BookModel.id == book_id)
+        book = self.session.scalars(statement).first()
         if book is None:
             raise HTTPException(status_code=404, detail="Book not found")
         self.session.delete(book)
