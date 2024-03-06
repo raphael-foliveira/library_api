@@ -13,15 +13,15 @@ class AuthorRepository(Repository):
         self.session = session
 
     def find(self, id: int) -> Author:
-        author = self.session.scalars(
-            select(AuthorModel).where(AuthorModel.id == id)
-        ).first()
+        statement = select(AuthorModel).where(AuthorModel.id == id)
+        author = self.session.scalars(statement).first()
         if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
         return author
 
     def list(self):
-        author_models = self.session.scalars(select(AuthorModel)).all()
+        statement = select(AuthorModel)
+        author_models = self.session.scalars(statement).all()
         return [author.to_entity() for author in author_models]
 
     def create(self, author: schemas.AuthorCreate):
@@ -35,9 +35,8 @@ class AuthorRepository(Repository):
         return author_model.to_entity()
 
     def delete(self, author_id: int) -> bool:
-        author = self.session.scalars(
-            select(AuthorModel).where(AuthorModel.id == author_id)
-        ).first()
+        statement = select(AuthorModel).where(AuthorModel.id == author_id)
+        author = self.session.scalars(statement).first()
         if author is None:
             raise HTTPException(status_code=404, detail="Author not found")
         self.session.delete(author)

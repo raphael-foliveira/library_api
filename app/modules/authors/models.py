@@ -1,4 +1,3 @@
-from typing import Any
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, mapped_column
 from app.database.config import Base
@@ -14,7 +13,7 @@ class AuthorModel(Base):
 
     books = relationship("BookModel", back_populates="author")
 
-    def __eq__(self, other: Any):
+    def __eq__(self, other):
         return self.id == other.id
 
     def to_entity(self) -> Author:

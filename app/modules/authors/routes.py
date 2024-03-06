@@ -38,4 +38,4 @@ def create_author(
 def delete_author(
     author_id: int, repository: AuthorRepository = Depends(get_author_repository)
 ) -> None:
-    return repository.delete(author_id)
+    repository.delete(author_id)
