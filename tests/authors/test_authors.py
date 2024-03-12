@@ -12,13 +12,14 @@ client = TestClient(app)
 
 author_repository_mock: AuthorRepository = mock.Mock()
 
-
-def setup_function():
+def initialize_mocks():
     author_repository_mock.list.return_value = authors_entities_stub
     author_repository_mock.find.return_value = authors_entities_stub[0]
     author_repository_mock.create.return_value = authors_entities_stub[0]
     author_repository_mock.delete.return_value = True
 
+def setup_function():
+    initialize_mocks()
 
 def override_get_author_repository():
     return author_repository_mock

@@ -23,13 +23,20 @@ def override_get_books_repository():
     return book_repository_mock
 
 
-def setup_function():
+def initialize_mocks():
     book_repository_mock.list.return_value = books_stub
     book_repository_mock.find.return_value = books_stub[0]
     book_repository_mock.create.return_value = books_stub[0]
     book_repository_mock.delete.return_value = True
+
+
+def setup_module():
     app.dependency_overrides[get_author_repository] = override_get_author_repository
     app.dependency_overrides[get_books_repository] = override_get_books_repository
+
+
+def setup_function():
+    initialize_mocks()
 
 
 def test_get_all_books():
