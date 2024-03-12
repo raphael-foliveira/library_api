@@ -59,13 +59,13 @@ def test_find_non_existing_book():
 
 
 def test_create_book():
-    mock_book = fake_book_schema()
-    mock_book.author_id = 1
+    fake_book = fake_book_schema()
+    fake_book.author_id = 1
     form_data: Mapping[str, Any] = {
-        "title": mock_book.title,
-        "release_date": mock_book.release_date.strftime("%Y-%m-%d"),
-        "number_of_pages": str(mock_book.number_of_pages),
-        "author_id": mock_book.author_id,
+        "title": fake_book.title,
+        "release_date": fake_book.release_date.strftime("%Y-%m-%d"),
+        "number_of_pages": str(fake_book.number_of_pages),
+        "author_id": fake_book.author_id,
     }
     file_data = io.BytesIO(b"test_image_content")
     response = client.post(
