@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.session import Session
 
 from app.database.config import get_db
@@ -16,14 +16,18 @@ def get_author_repository(db: Session = Depends(get_db)):
 def list_authors(
     repository: AuthorRepository = Depends(get_author_repository),
 ):
-    return repository.list()
+    result = repository.list()
+    return result
 
 
 @authors_router.get("/{author_id}/", response_model=schemas.Author)
 def retrieve_author(
     author_id: int, repository: AuthorRepository = Depends(get_author_repository)
 ):
-    return repository.find(author_id)
+    author = repository.find(author_id)
+    if author is None:
+        raise HTTPException(status_code=404, detail="Author not found")
+    return author
 
 
 @authors_router.post("/", status_code=201, response_model=schemas.Author)
@@ -38,4 +42,6 @@ def create_author(
 def delete_author(
     author_id: int, repository: AuthorRepository = Depends(get_author_repository)
 ) -> None:
-    return repository.delete(author_id)
+    ok = repository.delete(author_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Author not found")

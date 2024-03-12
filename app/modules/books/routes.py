@@ -1,7 +1,7 @@
 import os
 from datetime import date
 
-from fastapi import APIRouter, Depends, Form, UploadFile
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from sqlalchemy.orm.session import Session
 
 from app.database.config import get_db
@@ -30,7 +30,10 @@ def list_books(repository: BookRepository = Depends(get_books_repository)):
 def retrieve_book(
     book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
-    return repository.find(book_id)
+    book = repository.find(book_id)
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return book
 
 
 @books_router.post("/", status_code=201, response_model=schemas.Book)
@@ -69,4 +72,7 @@ async def create_book(
 def delete_book(
     book_id: int, repository: BookRepository = Depends(get_books_repository)
 ):
-    return repository.delete(book_id)
+    ok = repository.delete(book_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return ok

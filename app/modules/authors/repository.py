@@ -1,3 +1,4 @@
+from typing import List, Optional
 from sqlalchemy import select
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -12,15 +13,15 @@ class AuthorRepository(Repository):
     def __init__(self, session: Session):
         self.session = session
 
-    def find(self, id: int) -> Author:
+    def find(self, id: int) -> Optional[Author]:
         author = self.session.scalars(
             select(AuthorModel).where(AuthorModel.id == id)
         ).first()
         if author is None:
-            raise HTTPException(status_code=404, detail="Author not found")
+            return None
         return author
 
-    def list(self):
+    def list(self) -> list[Author]:
         author_models = self.session.scalars(select(AuthorModel)).all()
         return [author.to_entity() for author in author_models]
 
@@ -39,7 +40,7 @@ class AuthorRepository(Repository):
             select(AuthorModel).where(AuthorModel.id == author_id)
         ).first()
         if author is None:
-            raise HTTPException(status_code=404, detail="Author not found")
+            return False
         self.session.delete(author)
         self.session.commit()
         return True

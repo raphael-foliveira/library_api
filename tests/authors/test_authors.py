@@ -1,83 +1,71 @@
-from typing import Generator
-from fastapi import Depends
+from unittest import mock
 from fastapi.testclient import TestClient
 import pytest
-from sqlalchemy.orm.session import Session
 
-from app.database.config import Base
 from app.main import app
-from app.modules.authors.models import AuthorModel
 from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
-from tests.database.db import engine_test, get_test_db, sessionmaker_test
-from tests.factories import fake_author_model
+from ..stubs.author_stubs import authors_entities_stub, authors_schemas_stub
 
 client = TestClient(app)
 
 
-def override_get_author_repository(db: Session = Depends(get_test_db)):
-    return AuthorRepository(db)
+author_repository_mock: AuthorRepository = mock.Mock()
 
 
 @pytest.fixture
-def database_author_ids() -> Generator[list[int], None, None]:
-    with sessionmaker_test() as session:
-        authors = [fake_author_model() for _ in range(0, 5)]
-        session.add_all(authors)
-        session.commit()
-        yield [int(author.id) for author in session.query(AuthorModel).all()]
-        for author in session.query(AuthorModel).all():
-            session.delete(author)
-        session.commit()
+def setup():
+    author_repository_mock.list.return_value = authors_entities_stub
+    author_repository_mock.find.return_value = authors_entities_stub[0]
+    author_repository_mock.create.return_value = authors_entities_stub[0]
+    author_repository_mock.delete.return_value = True
 
 
-class TestAuthorsRoutes:
-    @classmethod
-    def setup_class(cls):
-        app.dependency_overrides[get_author_repository] = override_get_author_repository
-        cls.repository = override_get_author_repository()
-        Base.metadata.create_all(engine_test)
+def override_get_author_repository():
+    return author_repository_mock
 
-    @classmethod
-    def teardown_class(cls):
-        Base.metadata.drop_all(engine_test)
 
-    def test_get_all_authors(self, database_author_ids):
-        response = client.get("/authors")
-        assert response.status_code == 200
-        assert isinstance(response.json(), list)
-        assert len(response.json()) == len(database_author_ids)
+def setup_module():
+    app.dependency_overrides[get_author_repository] = override_get_author_repository
 
-    def test_find_author(self, database_author_ids):
-        for author_id in database_author_ids:
-            response = client.get(f"/authors/{author_id}")
-            assert response.status_code == 200
 
-    def test_find_non_existing_author(self, database_author_ids):
-        non_existing_author_id = 650
-        while non_existing_author_id in database_author_ids:
-            non_existing_author_id += 1
-        response = client.get(f"/authors/{non_existing_author_id}")
-        assert response.status_code == 404
+def test_get_all_authors(setup):
+    response = client.get("/authors")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == len(authors_entities_stub)
 
-    def test_create_author(self):
-        response = client.post(
-            "/authors", json={"first_name": "John", "last_name": "Doe"}
-        )
-        assert response.status_code == 201
 
-    def test_create_invalid_author(self):
-        response = client.post("/authors", json={"foo": "John", "bar": "Doe"})
-        assert response.status_code == 422
+def test_find_author(setup):
+    response = client.get(f"/authors/")
+    assert response.status_code == 200
 
-    def test_delete_author(self, database_author_ids):
-        for author_id in database_author_ids:
-            response = client.delete(f"/authors/{author_id}")
-            assert response.status_code == 204
 
-    def test_delete_non_existing_author(self, database_author_ids):
-        non_existing_author_id = 650
-        while non_existing_author_id in database_author_ids:
-            non_existing_author_id += 1
-        response = client.get(f"/authors/{non_existing_author_id}")
-        assert response.status_code == 404
+def test_find_non_existing_author(setup):
+    non_existing_author_id = 650
+    author_repository_mock.find.return_value = None
+    response = client.get(f"/authors/{non_existing_author_id}")
+    assert response.status_code == 404
+
+
+def test_create_author(setup):
+    response = client.post("/authors", json={"first_name": "John", "last_name": "Doe"})
+    assert response.status_code == 201
+
+
+def test_create_invalid_author(setup):
+    response = client.post("/authors", json={"foo": "John", "bar": "Doe"})
+    assert response.status_code == 422
+
+
+def test_delete_author(setup):
+    response = client.delete(f"/authors/{authors_entities_stub[0].id}")
+    assert response.status_code == 204
+
+
+def test_delete_non_existing_author(setup):
+    non_existing_author_id = 650
+    author_repository_mock.delete.return_value = False
+    response = client.delete(f"/authors/{non_existing_author_id}")
+    author_repository_mock.delete.return_value = True
+    assert response.status_code == 404

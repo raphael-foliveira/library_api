@@ -13,12 +13,12 @@ class BookRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def find(self, id: int) -> Book:
+    def find(self, id: int) -> Optional[Book]:
         book: Optional[BookModel] = self.session.scalars(
             select(BookModel).where(BookModel.id == id)
         ).first()
         if book is None:
-            raise HTTPException(status_code=404, detail="Book not found")
+            return None
         return book.to_entity()
 
     def list(self):
@@ -44,7 +44,7 @@ class BookRepository:
             select(BookModel).where(BookModel.id == book_id)
         ).first()
         if book is None:
-            raise HTTPException(status_code=404, detail="Book not found")
+            return False
         self.session.delete(book)
         self.session.commit()
         return True
