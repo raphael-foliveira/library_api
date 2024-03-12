@@ -4,7 +4,7 @@ from unittest import mock
 from fastapi.testclient import TestClient
 import pytest
 
-from app.main import app
+from app.app import app
 from app.modules.authors.routes import get_author_repository
 from app.modules.books.routes import get_books_repository, get_upload_path
 from tests.authors.test_authors import override_get_author_repository
