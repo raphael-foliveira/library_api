@@ -2,7 +2,7 @@ from typing import Any
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship, mapped_column
 from app.database.config import Base
-from app.modules.authors.schemas import Author
+from app.modules.authors.entities import Author
 
 
 class AuthorModel(Base):

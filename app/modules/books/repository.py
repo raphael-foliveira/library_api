@@ -1,29 +1,12 @@
-from typing import Optional
-from fastapi import HTTPException
-from sqlalchemy import select
 from sqlalchemy.orm import Session
-
-
+from app.interfaces.repository import Repository
 from . import schemas
 from .models import BookModel
-from .entities import Book
 
 
-class BookRepository:
+class BookRepository(Repository):
     def __init__(self, session: Session):
-        self.session = session
-
-    def find(self, id: int) -> Book:
-        book: Optional[BookModel] = self.session.scalars(
-            select(BookModel).where(BookModel.id == id)
-        ).first()
-        if book is None:
-            raise HTTPException(status_code=404, detail="Book not found")
-        return book.to_entity()
-
-    def list(self):
-        books = self.session.scalars(select(BookModel)).all()
-        return [book.to_entity() for book in books]
+        super().__init__(session)
 
     def create(self, book: schemas.BookCreate):
         new_book = BookModel(
@@ -38,13 +21,3 @@ class BookRepository:
         self.session.refresh(new_book)
         self.session.flush()
         return new_book.to_entity()
-
-    def delete(self, book_id: int) -> bool:
-        book = self.session.scalars(
-            select(BookModel).where(BookModel.id == book_id)
-        ).first()
-        if book is None:
-            raise HTTPException(status_code=404, detail="Book not found")
-        self.session.delete(book)
-        self.session.commit()
-        return True
