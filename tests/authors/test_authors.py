@@ -1,7 +1,5 @@
-from unittest import mock
 from fastapi.testclient import TestClient
 from app.app import app
-from app.modules.authors.repository import AuthorRepository
 from app.modules.authors.routes import get_author_repository
 from ..stubs.author_stubs import authors_entities_stub
 from ..mocks import author_mocks
