@@ -2,7 +2,6 @@ import io
 from typing import Mapping
 from unittest import mock
 from fastapi.testclient import TestClient
-import pytest
 
 from app.app import app
 from app.modules.authors.routes import get_author_repository

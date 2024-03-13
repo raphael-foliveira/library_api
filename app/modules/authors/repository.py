@@ -1,13 +1,8 @@
-from typing import List, Optional
-
-from fastapi import HTTPException
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.interfaces.repository import Repository
 
 from . import schemas
-from .entities import Author
 from .models import AuthorModel
 
 
