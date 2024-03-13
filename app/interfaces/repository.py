@@ -19,15 +19,15 @@ class Repository(ABC, Generic[T]):
         self.session = session
 
     def find(self, id: int) -> Optional[T]:
-        author = self.session.scalars(
-            select(T.__class__).where(T.__class__.id == id)
-        ).first()
+        statement = select(T.__class__).where(T.__class__.id == id)
+        author = self.session.scalars(statement).first()
         if author is None:
             return None
         return author
 
     def list(self) -> list[T]:
-        author_models = self.session.scalars(select(T.__class__)).all()
+        statement = select(T.__class__)
+        author_models = self.session.scalars(statement).all()
         return [author.to_entity() for author in author_models]
 
     @abstractmethod
@@ -35,9 +35,8 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError()
 
     def delete(self, book_id: int) -> bool:
-        book = self.session.scalars(
-            select(T.__class__).where(T.__class__.id == book_id)
-        ).first()
+        statement = select(T.__class__).where(T.__class__.id == book_id)
+        book = self.session.scalars(statement).first()
         if book is None:
             return False
         self.session.delete(book)
