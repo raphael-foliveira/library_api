@@ -1,14 +1,7 @@
-from typing import Optional
-from fastapi import HTTPException
-from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from app.interfaces.repository import Repository
-
-
 from . import schemas
 from .models import BookModel
-from .entities import Book
 
 
 class BookRepository(Repository):

@@ -31,7 +31,7 @@ class Repository(ABC, Generic[T]):
         return [author.to_entity() for author in author_models]
 
     @abstractmethod
-    def create(self, model: Any) -> Any:
+    def create(self, model: Any) -> T:
         raise NotImplementedError()
 
     def delete(self, book_id: int) -> bool:
