@@ -1,6 +1,5 @@
 import io
 from typing import Mapping
-from unittest import mock
 from fastapi.testclient import TestClient
 
 from app.app import app
@@ -12,21 +11,13 @@ from tests.factories import (
 )
 from typing import Any
 from ..stubs.book_stubs import books_stub
+from ..mocks import book_mocks
 
 client = TestClient(app)
 
-book_repository_mock = mock.Mock()
-
 
 def override_get_books_repository():
-    return book_repository_mock
-
-
-def initialize_mocks():
-    book_repository_mock.list.return_value = books_stub
-    book_repository_mock.find.return_value = books_stub[0]
-    book_repository_mock.create.return_value = books_stub[0]
-    book_repository_mock.delete.return_value = True
+    return book_mocks.repository
 
 
 def setup_module():
@@ -35,7 +26,7 @@ def setup_module():
 
 
 def setup_function():
-    initialize_mocks()
+    book_mocks.initialize()
 
 
 def test_get_all_books():
@@ -52,7 +43,7 @@ def test_find_book():
 
 def test_find_non_existing_book():
     non_existing_book_id = 650
-    book_repository_mock.find.return_value = None
+    book_mocks.repository.find.return_value = None
     response = client.get(f"/books/{non_existing_book_id}")
     assert response.status_code == 404
 
@@ -91,10 +82,10 @@ def test_delete_book():
 
 def test_delete_non_existing_book():
     non_existing_book_id = 650
-    book_repository_mock.delete.return_value = False
+    book_mocks.repository.delete.return_value = False
     response = client.delete(f"/books/{non_existing_book_id}")
     assert response.status_code == 404
-    book_repository_mock.delete.return_value = True
+    book_mocks.repository.delete.return_value = True
 
 
 def test_get_upload_path():

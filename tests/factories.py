@@ -7,7 +7,7 @@ from app.modules.books.models import BookModel
 from app.modules.authors import schemas
 from datetime import date
 
-fake = Faker()
+fake: Faker = Faker()
 
 
 def fake_author_entity():
