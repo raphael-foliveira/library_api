@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from ..books.schemas import Book
 
 
 class AuthorBase(BaseModel):
@@ -13,7 +12,3 @@ class AuthorCreate(AuthorBase):
 
 class Author(AuthorBase):
     id: int
-    books: list[Book] = []
-
-    class Config:
-        orm_mode = True

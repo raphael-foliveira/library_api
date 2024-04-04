@@ -4,7 +4,8 @@ from fastapi.testclient import TestClient
 
 from app.app import app
 from app.modules.authors.routes import get_author_repository
-from app.modules.books.routes import get_books_repository, get_upload_path
+from app.modules.books.providers import get_upload_path
+from app.modules.books.routes import get_books_repository
 from tests.authors.test_authors import override_get_author_repository
 from tests.factories import (
     fake_book_schema,
@@ -43,7 +44,7 @@ def test_find_book():
 
 def test_find_non_existing_book():
     non_existing_book_id = 650
-    book_mocks.repository.find.return_value = None
+    book_mocks.repository.find_one.return_value = None
     response = client.get(f"/books/{non_existing_book_id}")
     assert response.status_code == 404
 
@@ -51,17 +52,15 @@ def test_find_non_existing_book():
 def test_create_book():
     fake_book = fake_book_schema()
     fake_book.author_id = 1
-    form_data: Mapping[str, Any] = {
-        "title": fake_book.title,
-        "release_date": fake_book.release_date.strftime("%Y-%m-%d"),
-        "number_of_pages": str(fake_book.number_of_pages),
-        "author_id": fake_book.author_id,
-    }
-    file_data = io.BytesIO(b"test_image_content")
     response = client.post(
         "/books/",
-        data=form_data,
-        files={"image": ("test_image.jpg", file_data, "image/jpeg")},
+        json={
+            "title": fake_book.title,
+            "author_id": fake_book.author_id,
+            "release_date": fake_book.release_date.strftime("%Y-%m-%d"),
+            "number_of_pages": fake_book.number_of_pages,
+            "image_url": fake_book.image_url,
+        },
     )
     assert response.status_code == 201
 
