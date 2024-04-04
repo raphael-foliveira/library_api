@@ -34,7 +34,7 @@ def test_find_author():
 
 def test_find_non_existing_author():
     non_existing_author_id = 650
-    author_mocks.repository.find.return_value = None
+    author_mocks.repository.find_one.return_value = None
     response = client.get(f"/authors/{non_existing_author_id}")
     assert response.status_code == 404
 

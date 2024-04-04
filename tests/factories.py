@@ -4,7 +4,7 @@ from app.modules.authors.entities import Author
 from app.modules.books.entities import Book
 from app.modules.authors.models import AuthorModel
 from app.modules.books.models import BookModel
-from app.modules.authors import schemas
+from app.modules import authors, books
 from datetime import date
 
 fake: Faker = Faker()
@@ -53,13 +53,13 @@ def fake_book_model(include_id: bool = False):
 
 
 def fake_author_schema():
-    return schemas.Author(
+    return authors.schemas.Author(
         id=fake.random_int(), first_name=fake.name(), last_name=fake.name()
     )
 
 
 def fake_book_schema():
-    return schemas.Book(
+    return books.schemas.Book(
         id=fake.random_int(),
         title=fake.name(),
         author_id=fake.random_int(),
@@ -70,7 +70,7 @@ def fake_book_schema():
 
 
 def fake_author_create():
-    return schemas.AuthorCreate(first_name=fake.name(), last_name=fake.name())
+    return authors.schemas.AuthorCreate(first_name=fake.name(), last_name=fake.name())
 
 
 def fake_book_create():

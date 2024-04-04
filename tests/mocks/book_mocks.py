@@ -6,6 +6,6 @@ repository = mock.Mock()
 
 def initialize():
     repository.list.return_value = books_stub
-    repository.find.return_value = books_stub[0]
+    repository.find_one.return_value = books_stub[0]
     repository.create.return_value = books_stub[0]
     repository.delete.return_value = True

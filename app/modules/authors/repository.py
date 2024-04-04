@@ -8,11 +8,11 @@ from .models import AuthorModel
 
 class AuthorRepository(Repository):
     def __init__(self, session: Session):
-        super().__init__(session)
+        super().__init__(session, AuthorModel)
 
-    def create(self, author: schemas.AuthorCreate):
+    def create(self, model: schemas.AuthorCreate):
         author_model = AuthorModel(
-            first_name=author.first_name, last_name=author.last_name
+            first_name=model.first_name, last_name=model.last_name
         )
         self.session.add(author_model)
         self.session.commit()

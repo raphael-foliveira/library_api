@@ -2,7 +2,7 @@ from typing import Any
 from sqlalchemy import Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, mapped_column
 from app.database.config import Base
-from app.modules.books.schemas import Book
+from app.modules.books.entities import Book
 
 
 class BookModel(Base):

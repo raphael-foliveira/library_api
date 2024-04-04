@@ -13,20 +13,21 @@ class Entity:
 T = TypeVar("T", bound=Entity)
 
 
-class Repository(ABC, Generic[T]):
+class Repository(Generic[T]):
 
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, entity_class: T.__class__):
         self.session = session
+        self.entity_class = entity_class
 
-    def find(self, id: int) -> Optional[T]:
-        statement = select(T.__class__).where(T.__class__.id == id)
+    def find_one(self, id: int) -> Optional[T]:
+        statement = select(self.entity_class).where(self.entity_class.id == id)
         author = self.session.scalars(statement).first()
         if author is None:
             return None
         return author
 
     def list(self) -> list[T]:
-        statement = select(T.__class__)
+        statement = select(self.entity_class)
         author_models = self.session.scalars(statement).all()
         return [author.to_entity() for author in author_models]
 
@@ -35,7 +36,7 @@ class Repository(ABC, Generic[T]):
         raise NotImplementedError()
 
     def delete(self, book_id: int) -> bool:
-        statement = select(T.__class__).where(T.__class__.id == book_id)
+        statement = select(self.entity_class).where(self.entity_class.id == book_id)
         book = self.session.scalars(statement).first()
         if book is None:
             return False
