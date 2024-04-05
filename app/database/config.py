@@ -13,11 +13,3 @@ class Base(DeclarativeBase):
 
 engine = create_engine(str(os.getenv("DATABASE_URL")))
 session = sessionmaker(bind=engine)
-
-
-def get_db():
-    db = session()
-    try:
-        yield db
-    finally:
-        db.close()
