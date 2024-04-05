@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from app.interfaces.repository import Repository
 
@@ -7,15 +7,14 @@ from .models import AuthorModel
 
 
 class AuthorRepository(Repository):
-    def __init__(self, session: Session):
+    def __init__(self, session: sessionmaker):
         super().__init__(session, AuthorModel)
 
     def create(self, model: schemas.AuthorCreate):
-        author_model = AuthorModel(
-            first_name=model.first_name, last_name=model.last_name
-        )
-        self.session.add(author_model)
-        self.session.commit()
-        self.session.refresh(author_model)
-        self.session.flush()
-        return author_model.to_entity()
+        with self.session() as db:
+            author_model = AuthorModel(
+                first_name=model.first_name, last_name=model.last_name
+            )
+            db.add(author_model)
+            db.commit()
+            return author_model.to_entity()
